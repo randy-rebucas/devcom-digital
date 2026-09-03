@@ -62,6 +62,7 @@ export function MobileNav({
                 <MobileLink href="/dashboard">Dashboard</MobileLink>
                 <MobileLink href="/tools">Tools</MobileLink>
                 <MobileLink href="/projects">Projects</MobileLink>
+                <MobileLink href="/profile">Profile</MobileLink>
                 {isAdmin && (
                   <>
                     <div className="mt-2 border-t border-hairline pt-2" />

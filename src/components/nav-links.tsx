@@ -44,6 +44,9 @@ export function AuthedNavLinks() {
       <Link href="/projects" className="text-paper-dim transition-colors hover:text-gold-bright">
         Projects
       </Link>
+      <Link href="/profile" className="text-paper-dim transition-colors hover:text-gold-bright">
+        Profile
+      </Link>
     </>
   );
 }

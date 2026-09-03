@@ -9,6 +9,7 @@ export async function Navbar() {
   const session = await auth();
 
   return (
+    <>
     <header className="relative border-b border-hairline">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
         <Link
@@ -22,7 +23,6 @@ export async function Navbar() {
           {session?.user ? (
             <>
               <AuthedNavLinks />
-              {session.user.role === "ADMIN" && <AdminMenu />}
               <form
                 action={async () => {
                   "use server";
@@ -47,5 +47,7 @@ export async function Navbar() {
         />
       </div>
     </header>
+    {session?.user?.role === "ADMIN" && <AdminMenu />}
+    </>
   );
 }

@@ -33,11 +33,28 @@ export function AdminMenu() {
   }, []);
 
   return (
-    <div ref={ref} className="relative">
+    <div ref={ref} className="fixed bottom-5 right-5 z-50">
+      {open && (
+        <div
+          role="menu"
+          className="absolute bottom-full right-0 z-10 mb-2 w-44 overflow-hidden rounded-sm border border-hairline bg-ink-raised shadow-lg"
+        >
+          {ADMIN_LINKS.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              role="menuitem"
+              className="block px-4 py-2 text-sm text-paper-dim hover:bg-ink hover:text-paper"
+            >
+              {link.label}
+            </Link>
+          ))}
+        </div>
+      )}
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="flex items-center gap-1 text-paper-dim transition-colors hover:text-gold-bright"
+        className="flex items-center gap-1 rounded-full border border-hairline bg-ink-raised px-4 py-2 text-sm text-paper-dim shadow-lg backdrop-blur transition-colors hover:text-gold-bright"
         aria-haspopup="menu"
         aria-expanded={open}
       >
@@ -54,23 +71,6 @@ export function AdminMenu() {
           />
         </svg>
       </button>
-      {open && (
-        <div
-          role="menu"
-          className="absolute right-0 z-10 mt-2 w-44 overflow-hidden rounded-sm border border-hairline bg-ink-raised shadow-lg"
-        >
-          {ADMIN_LINKS.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              role="menuitem"
-              className="block px-4 py-2 text-sm text-paper-dim hover:bg-ink hover:text-paper"
-            >
-              {link.label}
-            </Link>
-          ))}
-        </div>
-      )}
     </div>
   );
 }

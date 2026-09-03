@@ -2,8 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { unlink, mkdir, writeFile } from "node:fs/promises";
-import path from "node:path";
+import { del, put } from "@vercel/blob";
 import bcrypt from "bcryptjs";
 import { auth, signOut } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
@@ -83,20 +82,18 @@ export async function uploadAvatar(
     return { error: "That file doesn't look like a valid PNG, JPEG, or WebP image." };
   }
 
-  const uploadDir = path.join(process.cwd(), "public", "uploads", "avatars");
-  await mkdir(uploadDir, { recursive: true });
-
-  const filename = `${userId}-${Date.now()}.${ext}`;
-  await writeFile(path.join(uploadDir, filename), bytes);
+  const filename = `avatars/${userId}-${Date.now()}.${ext}`;
+  const blob = await put(filename, bytes, {
+    access: "public",
+    contentType: file.type,
+  });
 
   const user = await prisma.user.findUnique({ where: { id: userId }, select: { image: true } });
-  const publicPath = `/uploads/avatars/${filename}`;
 
-  await prisma.user.update({ where: { id: userId }, data: { image: publicPath } });
+  await prisma.user.update({ where: { id: userId }, data: { image: blob.url } });
 
-  if (user?.image?.startsWith("/uploads/avatars/")) {
-    const oldPath = path.join(process.cwd(), "public", user.image);
-    await unlink(oldPath).catch(() => {});
+  if (user?.image?.includes(".public.blob.vercel-storage.com/")) {
+    await del(user.image).catch(() => {});
   }
 
   revalidatePath("/profile");

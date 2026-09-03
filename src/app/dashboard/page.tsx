@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { Navbar } from "@/components/navbar";
+import { LicenseKeyReveal } from "@/components/license-key-reveal";
 import { StatusIndicator } from "@/components/ui/status-indicator";
 import { ButtonLink } from "@/components/ui/button";
 import { auth } from "@/lib/auth";
@@ -9,9 +10,13 @@ export default async function DashboardPage() {
   const session = await auth();
   if (!session?.user?.id) redirect("/login");
 
-  const [subscription, license] = await Promise.all([
+  const [subscription, license, user] = await Promise.all([
     prisma.subscription.findUnique({ where: { userId: session.user.id } }),
     prisma.license.findUnique({ where: { userId: session.user.id } }),
+    prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { lastLoginAt: true, lastLoginIp: true },
+    }),
   ]);
 
   const isActive = subscription?.status === "ACTIVE" && license?.active;
@@ -52,13 +57,18 @@ export default async function DashboardPage() {
               </h2>
               {license && isActive ? (
                 <>
-                  <p className="mt-3 select-all border border-hairline bg-ink-raised px-3 py-2 font-mono text-sm tabular-nums text-gold-bright">
-                    {license.key}
-                  </p>
+                  <LicenseKeyReveal licenseKey={license.key} />
                   <p className="mt-2 text-xs text-paper-dim">
-                    Keep this key private &mdash; it unlocks the digital tools
-                    suite for your account.
+                    Keep this key private &mdash; sharing it, or your login,
+                    lets someone else use your subscription. Logging in
+                    elsewhere signs this session out automatically.
                   </p>
+                  {user?.lastLoginAt && (
+                    <p className="mt-2 text-xs text-paper-dim">
+                      Last login: {user.lastLoginAt.toLocaleString()}
+                      {user.lastLoginIp ? ` from ${user.lastLoginIp}` : ""}
+                    </p>
+                  )}
                 </>
               ) : (
                 <p className="mt-3 text-sm text-paper-dim">

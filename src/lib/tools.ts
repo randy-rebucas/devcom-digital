@@ -32,3 +32,22 @@ export function getToolBySlug(slug: string) {
 export function getEnabledToolBySlug(slug: string) {
   return prisma.tool.findFirst({ where: { slug, enabled: true } });
 }
+
+export async function incrementToolDownloadCount(slug: string, userId: string) {
+  const tool = await prisma.tool.findFirst({ where: { slug, enabled: true } });
+  if (!tool) return false;
+
+  await prisma.$transaction([
+    prisma.tool.update({
+      where: { id: tool.id },
+      data: { downloadCount: { increment: 1 } },
+    }),
+    prisma.toolDownload.upsert({
+      where: { userId_toolId: { userId, toolId: tool.id } },
+      create: { userId, toolId: tool.id, count: 1 },
+      update: { count: { increment: 1 }, lastDownloadedAt: new Date() },
+    }),
+  ]);
+
+  return true;
+}

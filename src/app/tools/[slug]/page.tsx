@@ -4,6 +4,7 @@ import { notFound, redirect } from "next/navigation";
 import ReactMarkdown from "react-markdown";
 import { Navbar } from "@/components/navbar";
 import { SubscriptionRequired } from "@/components/subscription-required";
+import { ToolDownloadLink } from "@/components/tool-download-link";
 import { ToolStatusBadge } from "@/components/tool-status-badge";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
@@ -97,12 +98,7 @@ export default async function ToolDetailPage({
                 Download
               </h2>
               {tool.downloadUrl ? (
-                <a
-                  href={tool.downloadUrl}
-                  className="mt-3 inline-block rounded-sm bg-gold px-4 py-2 text-sm font-semibold text-ink hover:bg-gold-bright"
-                >
-                  Download tool
-                </a>
+                <ToolDownloadLink slug={tool.slug} downloadUrl={tool.downloadUrl} />
               ) : (
                 <p className="mt-3 text-sm text-paper-dim">
                   A download link will be available once this tool ships.

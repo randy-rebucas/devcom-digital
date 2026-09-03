@@ -22,7 +22,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
       },
-      async authorize(credentials) {
+      async authorize(credentials, request) {
         const email = credentials?.email as string | undefined;
         const password = credentials?.password as string | undefined;
         if (!email || !password) return null;
@@ -35,7 +35,22 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
         if (!user.emailVerified) throw new EmailNotVerifiedError();
 
-        return { id: user.id, email: user.email, name: user.name, role: user.role };
+        const sessionId = crypto.randomUUID();
+        const ip =
+          request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? null;
+
+        await prisma.user.update({
+          where: { id: user.id },
+          data: { currentSessionId: sessionId, lastLoginAt: new Date(), lastLoginIp: ip },
+        });
+
+        return {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          role: user.role,
+          sessionId,
+        };
       },
     }),
   ],
@@ -44,7 +59,18 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (user) {
         token.id = user.id;
         token.role = (user as { role?: string }).role;
+        token.sessionId = (user as { sessionId?: string }).sessionId;
+        return token;
       }
+
+      const dbUser = await prisma.user.findUnique({
+        where: { id: token.id as string },
+        select: { currentSessionId: true },
+      });
+      if (!dbUser || dbUser.currentSessionId !== token.sessionId) {
+        return null;
+      }
+
       return token;
     },
     async session({ session, token }) {

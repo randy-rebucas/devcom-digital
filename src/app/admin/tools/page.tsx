@@ -45,6 +45,9 @@ export default async function AdminToolsPage() {
                   />
                 </div>
                 <p className="truncate text-sm text-paper-dim">/tools/{tool.slug}</p>
+                <p className="mt-0.5 text-xs text-paper-dim">
+                  {tool.downloadCount} download{tool.downloadCount === 1 ? "" : "s"}
+                </p>
               </div>
               <div className="flex shrink-0 items-center gap-3 text-sm">
                 <form

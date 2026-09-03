@@ -1,4 +1,6 @@
 import type { Tool } from "@prisma/client";
+import { Button } from "@/components/ui/button";
+import { Field, Input, Select, Textarea } from "@/components/ui/field";
 
 const STATUS_OPTIONS: { value: Tool["status"]; label: string }[] = [
   { value: "IN_DEVELOPMENT", label: "In development" },
@@ -16,84 +18,65 @@ export function ToolForm({
 }) {
   return (
     <form action={action} className="mt-8 space-y-5">
-      <div>
-        <label className="block text-sm font-medium">Name</label>
-        <input
-          name="name"
-          defaultValue={tool?.name}
-          required
-          className="mt-1 w-full rounded-md border border-neutral-300 px-3 py-2 text-sm dark:border-neutral-700 dark:bg-neutral-900"
-        />
-      </div>
+      <Field label="Name" htmlFor="name">
+        <Input id="name" name="name" defaultValue={tool?.name} required />
+      </Field>
 
-      <div>
-        <label className="block text-sm font-medium">Slug</label>
-        <input
-          name="slug"
-          defaultValue={tool?.slug}
-          placeholder="auto-generated from name if left blank"
-          className="mt-1 w-full rounded-md border border-neutral-300 px-3 py-2 text-sm dark:border-neutral-700 dark:bg-neutral-900"
-        />
-      </div>
+      <Field label="Slug" htmlFor="slug" hint="Leave blank to auto-generate from the name.">
+        <Input id="slug" name="slug" defaultValue={tool?.slug} placeholder="my-tool" />
+      </Field>
 
-      <div>
-        <label className="block text-sm font-medium">Feature image URL</label>
-        <input
+      <Field label="Feature image URL" htmlFor="imageUrl">
+        <Input
+          id="imageUrl"
           name="imageUrl"
           defaultValue={tool?.imageUrl ?? ""}
           placeholder="https://..."
-          className="mt-1 w-full rounded-md border border-neutral-300 px-3 py-2 text-sm dark:border-neutral-700 dark:bg-neutral-900"
         />
-      </div>
+      </Field>
 
-      <div>
-        <label className="block text-sm font-medium">Description (Markdown)</label>
-        <textarea
+      <Field
+        label="Description (Markdown)"
+        htmlFor="desc"
+        hint="Supports Markdown — headings, lists, bold/italic, links."
+      >
+        <Textarea
+          id="desc"
           name="desc"
           defaultValue={tool?.desc}
           required
           rows={6}
-          className="mt-1 w-full rounded-md border border-neutral-300 px-3 py-2 font-mono text-sm dark:border-neutral-700 dark:bg-neutral-900"
+          className="font-mono"
         />
-        <p className="mt-1 text-xs text-neutral-500">
-          Supports Markdown — headings, lists, bold/italic, links.
-        </p>
-      </div>
+      </Field>
 
-      <div>
-        <label className="block text-sm font-medium">Status</label>
-        <select
-          name="status"
-          defaultValue={tool?.status ?? "IN_DEVELOPMENT"}
-          className="mt-1 w-full rounded-md border border-neutral-300 px-3 py-2 text-sm dark:border-neutral-700 dark:bg-neutral-900"
-        >
+      <Field label="Status" htmlFor="status">
+        <Select id="status" name="status" defaultValue={tool?.status ?? "IN_DEVELOPMENT"}>
           {STATUS_OPTIONS.map((opt) => (
             <option key={opt.value} value={opt.value}>
               {opt.label}
             </option>
           ))}
-        </select>
-      </div>
+        </Select>
+      </Field>
 
-      <div>
-        <label className="block text-sm font-medium">Download URL</label>
-        <input
+      <Field label="Download URL" htmlFor="downloadUrl">
+        <Input
+          id="downloadUrl"
           name="downloadUrl"
           defaultValue={tool?.downloadUrl ?? ""}
           placeholder="https://..."
-          className="mt-1 w-full rounded-md border border-neutral-300 px-3 py-2 text-sm dark:border-neutral-700 dark:bg-neutral-900"
         />
-      </div>
+      </Field>
 
-      <div>
-        <label className="block text-sm font-medium">Guide URL</label>
-        <input
+      <Field label="Guide URL" htmlFor="guideUrl">
+        <Input
+          id="guideUrl"
           name="guideUrl"
           defaultValue={tool?.guideUrl ?? ""}
           placeholder="https://..."
-          className="mt-1 w-full rounded-md border border-neutral-300 px-3 py-2 text-sm dark:border-neutral-700 dark:bg-neutral-900"
         />
-      </div>
+      </Field>
 
       <div className="flex items-center gap-2">
         <input
@@ -101,9 +84,9 @@ export function ToolForm({
           name="requiresLicenseKey"
           type="checkbox"
           defaultChecked={tool?.requiresLicenseKey}
-          className="h-4 w-4 rounded border-neutral-300 dark:border-neutral-700"
+          className="h-4 w-4 rounded-sm border-hairline bg-ink text-gold focus-visible:outline-2 focus-visible:outline-gold-bright"
         />
-        <label htmlFor="requiresLicenseKey" className="text-sm">
+        <label htmlFor="requiresLicenseKey" className="text-sm text-paper-dim">
           Requires a license key to activate
         </label>
       </div>
@@ -114,19 +97,14 @@ export function ToolForm({
           name="enabled"
           type="checkbox"
           defaultChecked={tool?.enabled ?? true}
-          className="h-4 w-4 rounded border-neutral-300 dark:border-neutral-700"
+          className="h-4 w-4 rounded-sm border-hairline bg-ink text-gold focus-visible:outline-2 focus-visible:outline-gold-bright"
         />
-        <label htmlFor="enabled" className="text-sm">
+        <label htmlFor="enabled" className="text-sm text-paper-dim">
           Enabled (visible to subscribers)
         </label>
       </div>
 
-      <button
-        type="submit"
-        className="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-500"
-      >
-        {submitLabel}
-      </button>
+      <Button type="submit">{submitLabel}</Button>
     </form>
   );
 }

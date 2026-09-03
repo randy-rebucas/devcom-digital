@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
+import { Button } from "@/components/ui/button";
+import { Field, Input } from "@/components/ui/field";
 
 export function LoginForm() {
   const router = useRouter();
@@ -48,40 +50,30 @@ export function LoginForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       {notice && !error && (
-        <p className="rounded-md bg-neutral-100 px-3 py-2 text-sm text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300">
+        <p className="rounded-sm border border-hairline bg-ink-raised px-3 py-2 text-sm text-paper-dim">
           {notice}
         </p>
       )}
       {error && (
-        <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-950 dark:text-red-400">
+        <p className="rounded-sm border border-red-900/50 bg-red-950/40 px-3 py-2 text-sm text-red-400">
           {error}
         </p>
       )}
-      <div>
-        <label className="block text-sm font-medium">Email</label>
-        <input
-          name="email"
-          type="email"
-          required
-          className="mt-1 w-full rounded-md border border-neutral-300 px-3 py-2 dark:border-neutral-700 dark:bg-neutral-900"
-        />
-      </div>
-      <div>
-        <label className="block text-sm font-medium">Password</label>
-        <input
+      <Field label="Email" htmlFor="email">
+        <Input id="email" name="email" type="email" autoComplete="email" required />
+      </Field>
+      <Field label="Password" htmlFor="password">
+        <Input
+          id="password"
           name="password"
           type="password"
+          autoComplete="current-password"
           required
-          className="mt-1 w-full rounded-md border border-neutral-300 px-3 py-2 dark:border-neutral-700 dark:bg-neutral-900"
         />
-      </div>
-      <button
-        type="submit"
-        disabled={loading}
-        className="w-full rounded-md bg-indigo-600 px-4 py-2 font-medium text-white hover:bg-indigo-500 disabled:opacity-60"
-      >
+      </Field>
+      <Button type="submit" disabled={loading} className="w-full">
         {loading ? "Signing in…" : "Sign in"}
-      </button>
+      </Button>
     </form>
   );
 }

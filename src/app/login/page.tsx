@@ -9,18 +9,20 @@ export default function LoginPage() {
       <Navbar />
       <main className="flex flex-1 items-center justify-center px-6 py-20">
         <div className="w-full max-w-sm">
-          <h1 className="text-2xl font-semibold">Log in</h1>
-          <p className="mt-1 text-sm text-neutral-500">
+          <h1 className="font-display text-2xl font-bold tracking-tight text-paper">
+            Log in
+          </h1>
+          <p className="mt-1 text-sm text-paper-dim">
             Access your Devcom Digital dashboard and license key.
           </p>
-          <div className="mt-6">
+          <div className="mt-8">
             <Suspense fallback={null}>
               <LoginForm />
             </Suspense>
           </div>
-          <p className="mt-6 text-sm text-neutral-500">
+          <p className="mt-6 text-sm text-paper-dim">
             No account yet?{" "}
-            <Link href="/register" className="text-indigo-600 hover:underline">
+            <Link href="/register" className="text-gold hover:text-gold-bright">
               Create one
             </Link>
           </p>

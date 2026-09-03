@@ -62,10 +62,10 @@ async function main() {
   console.log(`  license:  ${license.key}`);
 
   const tools = [
-    { slug: "seo-keyword-toolkit", name: "SEO & Keyword Toolkit", desc: "Rank tracking and on-page audits.", status: "IN_DEVELOPMENT" as const, order: 0 },
-    { slug: "social-content-scheduler", name: "Social Content Scheduler", desc: "Cross-platform post planning.", status: "IN_DEVELOPMENT" as const, order: 1 },
-    { slug: "campaign-analytics", name: "Campaign Analytics", desc: "Unified ad spend and ROI dashboards.", status: "IN_DEVELOPMENT" as const, order: 2 },
-    { slug: "ad-creative-generator", name: "Ad Creative Generator", desc: "On-brand copy and creative drafts.", status: "IN_DEVELOPMENT" as const, order: 3 },
+    { slug: "seo-keyword-toolkit", name: "SEO & Keyword Toolkit", desc: "Rank tracking and on-page audits.", status: "AVAILABLE" as const, order: 0 },
+    { slug: "social-content-scheduler", name: "Social Content Scheduler", desc: "Cross-platform post planning.", status: "AVAILABLE" as const, order: 1 },
+    { slug: "campaign-analytics", name: "Campaign Analytics", desc: "Unified ad spend and ROI dashboards.", status: "AVAILABLE" as const, order: 2 },
+    { slug: "ad-creative-generator", name: "Ad Creative Generator", desc: "On-brand copy and creative drafts.", status: "AVAILABLE" as const, order: 3 },
     { slug: "shopify-themes-apps", name: "Shopify Themes & Apps", desc: "Curated themes and app recommendations for your store.", status: "IN_DEVELOPMENT" as const, order: 4 },
     { slug: "custom-scripts", name: "Custom Scripts", desc: "Tailored scripts to automate storefront and backend tasks.", status: "IN_DEVELOPMENT" as const, order: 5 },
     { slug: "automations", name: "Automations", desc: "Workflow automations across marketing and operations.", status: "IN_DEVELOPMENT" as const, order: 6 },

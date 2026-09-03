@@ -1,116 +1,137 @@
 import Link from "next/link";
 import { Navbar } from "@/components/navbar";
+import { ToolStatusBadge } from "@/components/tool-status-badge";
+import { ButtonLink } from "@/components/ui/button";
+import { listEnabledTools, stripMarkdown } from "@/lib/tools";
 
-const FEATURES = [
+const STEPS = [
   {
-    title: "SEO & Keyword Toolkit",
-    desc: "Track rankings, audit on-page SEO, and surface keyword opportunities.",
+    n: "01",
+    title: "Create your account",
+    desc: "Register with an email and choose the subscription plan.",
   },
   {
-    title: "Social Content Scheduler",
-    desc: "Plan and queue posts across platforms from a single calendar.",
+    n: "02",
+    title: "Pay securely with PayPal",
+    desc: "Billed on a recurring schedule — cancel anytime from PayPal.",
   },
   {
-    title: "Campaign Analytics",
-    desc: "Unified dashboards for ad spend, conversions, and ROI reporting.",
-  },
-  {
-    title: "Ad Creative Generator",
-    desc: "Produce on-brand ad copy and creative variants in seconds.",
+    n: "03",
+    title: "Get your credential",
+    desc: "A license key is issued to your account and every tool in the suite lights up.",
   },
 ];
 
-export default function Home() {
+export default async function Home() {
+  const tools = await listEnabledTools();
+
   return (
     <>
       <Navbar />
       <main className="flex-1">
-        <section className="mx-auto max-w-6xl px-6 py-24 text-center">
-          <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
-            Digital marketing tools,
+        <section className="mx-auto max-w-6xl px-6 pb-20 pt-20 sm:pb-28 sm:pt-28">
+          <h1 className="max-w-3xl font-display text-5xl font-bold leading-[1.05] tracking-tight text-paper sm:text-7xl">
+            Every marketing tool.
             <br />
-            <span className="text-indigo-600">unlocked by subscription.</span>
+            <span className="text-gold">One credential.</span>
           </h1>
-          <p className="mx-auto mt-6 max-w-2xl text-lg text-neutral-600 dark:text-neutral-400">
-            Devcom Digital Marketing Services builds the tools growing
-            businesses use to plan, launch, and measure their marketing.
-            Subscribe once, get a personal license key, and unlock the full
-            suite.
+          <p className="mt-8 max-w-xl text-lg leading-relaxed text-paper-dim">
+            One subscription, one license key, the whole Devcom Digital suite.
           </p>
-          <div className="mt-10 flex justify-center gap-4">
-            <Link
-              href="/pricing"
-              className="rounded-md bg-indigo-600 px-6 py-3 font-medium text-white hover:bg-indigo-500"
-            >
+          <div className="mt-10 flex flex-wrap gap-4">
+            <ButtonLink href="/pricing" size="lg">
               View pricing
-            </Link>
-            <Link
-              href="/register"
-              className="rounded-md border border-neutral-300 px-6 py-3 font-medium hover:border-indigo-600 hover:text-indigo-600 dark:border-neutral-700"
-            >
+            </ButtonLink>
+            <ButtonLink href="/register" variant="secondary" size="lg">
               Create an account
-            </Link>
+            </ButtonLink>
           </div>
         </section>
 
-        <section className="border-t border-neutral-200 bg-neutral-50 py-20 dark:border-neutral-800 dark:bg-neutral-900">
-          <div className="mx-auto max-w-6xl px-6">
-            <h2 className="text-center text-2xl font-semibold">
-              What&apos;s inside the suite
+        <section className="border-t border-hairline">
+          <div className="mx-auto max-w-6xl px-6 py-16 sm:py-20">
+            <div className="flex items-baseline justify-between gap-4">
+              <h2 className="font-display text-2xl font-bold tracking-tight text-paper sm:text-3xl">
+                The suite
+              </h2>
+              <span className="font-mono text-sm text-paper-dim tabular-nums">
+                {tools.length.toString().padStart(2, "0")} tool
+                {tools.length === 1 ? "" : "s"}
+              </span>
+            </div>
+
+            {tools.length === 0 ? (
+              <p className="mt-10 border-t border-hairline pt-8 text-paper-dim">
+                The suite is being assembled — check back soon.
+              </p>
+            ) : (
+              <ul className="mt-8 grid grid-cols-1 border-l border-t border-hairline sm:grid-cols-2">
+                {tools.map((tool, i) => (
+                  <li key={tool.slug} className="border-b border-r border-hairline">
+                    <Link
+                      href={`/tools/${tool.slug}`}
+                      className="group flex h-full flex-col gap-3 p-6 transition-colors hover:bg-ink-raised"
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <span className="font-mono text-xs text-gold-dim">
+                          No. {(i + 1).toString().padStart(2, "0")}
+                        </span>
+                        <ToolStatusBadge status={tool.status} className="shrink-0" />
+                      </div>
+                      <h3 className="font-display text-xl font-bold tracking-tight text-paper group-hover:text-gold-bright">
+                        {tool.name}
+                      </h3>
+                      <p className="line-clamp-2 text-sm text-paper-dim">
+                        {stripMarkdown(tool.desc)}
+                      </p>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </section>
+
+        <section className="border-t border-hairline">
+          <div className="mx-auto max-w-6xl px-6 py-16 sm:py-20">
+            <h2 className="font-display text-2xl font-bold tracking-tight text-paper sm:text-3xl">
+              How access works
             </h2>
-            <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-              {FEATURES.map((f) => (
-                <div
-                  key={f.title}
-                  className="rounded-lg border border-neutral-200 bg-white p-6 dark:border-neutral-800 dark:bg-neutral-950"
-                >
-                  <h3 className="font-medium">{f.title}</h3>
-                  <p className="mt-2 text-sm text-neutral-600 dark:text-neutral-400">
-                    {f.desc}
-                  </p>
-                </div>
-              ))}
+
+            <div className="relative mt-16">
+              <div
+                aria-hidden="true"
+                className="absolute top-5 hidden h-px bg-hairline sm:block sm:left-[16.6667%] sm:right-[16.6667%]"
+              />
+              <ol className="grid grid-cols-1 gap-10 sm:grid-cols-3 sm:gap-6">
+                {STEPS.map((step, i) => {
+                  const isLast = i === STEPS.length - 1;
+                  return (
+                    <li key={step.n} className="flex gap-5 sm:flex-col sm:gap-0">
+                      <span
+                        className={
+                          "relative z-10 flex h-10 w-10 shrink-0 items-center justify-center rounded-full border font-mono text-sm sm:mx-auto " +
+                          (isLast
+                            ? "border-gold-bright bg-gold text-ink shadow-[0_0_0_4px_color-mix(in_srgb,var(--gold-bright)_18%,transparent),0_0_16px_2px_color-mix(in_srgb,var(--gold-bright)_45%,transparent)]"
+                            : "border-hairline bg-ink text-paper-dim")
+                        }
+                      >
+                        {step.n}
+                      </span>
+                      <div className="sm:mt-5 sm:text-center">
+                        <h3 className="font-medium text-paper">{step.title}</h3>
+                        <p className="mt-1 max-w-xs text-sm leading-relaxed text-paper-dim sm:mx-auto">
+                          {step.desc}
+                        </p>
+                      </div>
+                    </li>
+                  );
+                })}
+              </ol>
             </div>
           </div>
         </section>
-
-        <section className="py-20">
-          <div className="mx-auto max-w-3xl px-6 text-center">
-            <h2 className="text-2xl font-semibold">How access works</h2>
-            <ol className="mt-8 space-y-6 text-left">
-              <li className="flex gap-4">
-                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-indigo-600 text-sm font-semibold text-white">
-                  1
-                </span>
-                <p className="text-neutral-600 dark:text-neutral-400">
-                  Create a free account and choose the subscription plan.
-                </p>
-              </li>
-              <li className="flex gap-4">
-                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-indigo-600 text-sm font-semibold text-white">
-                  2
-                </span>
-                <p className="text-neutral-600 dark:text-neutral-400">
-                  Pay securely with PayPal &mdash; billed on a recurring
-                  schedule.
-                </p>
-              </li>
-              <li className="flex gap-4">
-                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-indigo-600 text-sm font-semibold text-white">
-                  3
-                </span>
-                <p className="text-neutral-600 dark:text-neutral-400">
-                  We generate a unique license key tied to your account and
-                  unlock the tools dashboard.
-                </p>
-              </li>
-            </ol>
-          </div>
-        </section>
       </main>
-      <footer className="border-t border-neutral-200 py-8 text-center text-sm text-neutral-500 dark:border-neutral-800">
-        © {new Date().getFullYear()} Devcom Digital Marketing Services.
-      </footer>
     </>
   );
 }

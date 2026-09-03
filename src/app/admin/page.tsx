@@ -1,13 +1,9 @@
 import Link from "next/link";
-import { redirect } from "next/navigation";
-import { Navbar } from "@/components/navbar";
 import { auth } from "@/lib/auth";
-import { isAdmin } from "@/lib/permissions";
 import { prisma } from "@/lib/prisma";
 
 export default async function AdminOverviewPage() {
   const session = await auth();
-  if (!isAdmin(session)) redirect("/tools");
 
   const [toolCount, userCount, adminCount] = await Promise.all([
     prisma.tool.count(),
@@ -21,34 +17,33 @@ export default async function AdminOverviewPage() {
   ];
 
   return (
-    <>
-      <Navbar />
-      <main className="flex-1 px-6 py-16">
-        <div className="mx-auto max-w-4xl">
-          <h1 className="text-2xl font-semibold">Admin</h1>
-          <p className="mt-1 text-sm text-neutral-500">
-            Signed in as {session!.user.email}
-          </p>
+    <div className="mx-auto max-w-4xl">
+      <h1 className="font-display text-2xl font-bold tracking-tight text-paper">
+        Admin
+      </h1>
+      <p className="mt-1 text-sm text-paper-dim">
+        Signed in as {session!.user.email}
+      </p>
 
-          <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2">
-            {cards.map((card) => (
-              <Link
-                key={card.href}
-                href={card.href}
-                className="rounded-lg border border-neutral-200 p-5 transition hover:border-neutral-300 dark:border-neutral-800 dark:hover:border-neutral-700"
-              >
-                <div className="flex items-baseline justify-between">
-                  <h2 className="font-medium">{card.label}</h2>
-                  <span className="text-2xl font-semibold">{card.value}</span>
-                </div>
-                <p className="mt-1 text-sm text-neutral-600 dark:text-neutral-400">
-                  {card.desc}
-                </p>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </main>
-    </>
+      <div className="mt-8 grid grid-cols-1 border-l border-t border-hairline sm:grid-cols-2">
+        {cards.map((card) => (
+          <Link
+            key={card.href}
+            href={card.href}
+            className="border-b border-r border-hairline p-5 transition-colors hover:bg-ink-raised"
+          >
+            <div className="flex items-baseline justify-between">
+              <h2 className="text-xs font-semibold uppercase tracking-wide text-paper-dim">
+                {card.label}
+              </h2>
+              <span className="font-mono text-2xl font-bold tabular-nums text-paper">
+                {card.value}
+              </span>
+            </div>
+            <p className="mt-2 text-sm text-paper-dim">{card.desc}</p>
+          </Link>
+        ))}
+      </div>
+    </div>
   );
 }

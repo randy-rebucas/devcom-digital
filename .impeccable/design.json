@@ -1,0 +1,157 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-03T00:00:00.000Z",
+  "title": "Design System: Devcom Digital Marketing Services",
+  "extensions": {
+    "colorMeta": {
+      "gold": {
+        "role": "primary",
+        "displayName": "Trophy Gold",
+        "canonical": "#c9973f",
+        "tonalRamp": ["#241d10", "#3d2f18", "#564322", "#6b5730", "#9a7c3f", "#c9973f", "#e3b563", "#f3dbab"]
+      },
+      "gold-bright": {
+        "role": "primary",
+        "displayName": "Gold Bright (lit/hover)",
+        "canonical": "#e3b563",
+        "tonalRamp": ["#241d10", "#3d2f18", "#6b5730", "#9a7c3f", "#c9973f", "#e3b563", "#eecb95", "#f7e6c9"]
+      },
+      "gold-dim": {
+        "role": "primary",
+        "displayName": "Gold Dim (dormant accent)",
+        "canonical": "#6b5730",
+        "tonalRamp": ["#1c1610", "#2b2318", "#3a3020", "#4d3f28", "#6b5730", "#8c7448", "#ab9468", "#cbb890"]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Warm Charcoal Ground",
+        "canonical": "#15120e",
+        "tonalRamp": ["#0a0806", "#15120e", "#1c1812", "#2a241c", "#3a3226", "#4f4638", "#6b5f4e", "#8c8170"]
+      },
+      "ink-raised": {
+        "role": "neutral",
+        "displayName": "Raised Panel",
+        "canonical": "#1c1812",
+        "tonalRamp": ["#0d0b08", "#1c1812", "#2a241c", "#3a3226", "#4f4638", "#6b5f4e", "#8c8170", "#b0a794"]
+      },
+      "paper": {
+        "role": "neutral",
+        "displayName": "Warm Off-White",
+        "canonical": "#f2ece1",
+        "tonalRamp": ["#3a3226", "#6b5f4e", "#8c8170", "#a89e8c", "#c4bba9", "#ddd5c5", "#f2ece1", "#faf7f2"]
+      },
+      "paper-dim": {
+        "role": "neutral",
+        "displayName": "Muted Parchment Text",
+        "canonical": "#a89e8c",
+        "tonalRamp": ["#2a241c", "#3a3226", "#4f4638", "#6b5f4e", "#8c8170", "#a89e8c", "#c4bba9", "#ddd5c5"]
+      },
+      "hairline": {
+        "role": "neutral",
+        "displayName": "Hairline Rule",
+        "canonical": "#3a3226",
+        "tonalRamp": ["#15120e", "#1c1812", "#2a241c", "#3a3226", "#4f4638", "#6b5f4e", "#8c8170", "#b0a794"]
+      }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display (Syne)", "purpose": "Homepage hero headline only." },
+      "body": { "displayName": "Body (Plus Jakarta Sans)", "purpose": "Descriptive copy, markdown tool descriptions." },
+      "label": { "displayName": "Label (Plus Jakarta Sans, uppercase)", "purpose": "Functional field and section-group labels only, never decorative eyebrow copy." },
+      "mono": { "displayName": "Mono / Tabular (Space Mono)", "purpose": "Price, tool index numerals, step numbers, license key, counts." }
+    },
+    "shadows": [
+      { "name": "overlay-mobile-nav", "value": "shadow-lg (Tailwind default)", "purpose": "The system's sole shadow, scoped to the mobile navigation's floating dropdown panel. Not used on any resting surface." }
+    ],
+    "motion": [
+      { "name": "transition-colors", "value": "transition-colors (Tailwind default duration/easing)", "purpose": "Default state transition for links, buttons, and lattice-cell hover fills." }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Solid gold CTA button, used for the main conversion action per screen.",
+      "html": "<button class=\"ds-btn-primary\">View pricing</button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: #c9973f; color: #15120e; border: none; border-radius: 2px; padding: 8px 16px; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 600; letter-spacing: -0.01em; font-size: 0.875rem; cursor: pointer; transition: background-color 0.15s; } .ds-btn-primary:hover { background: #e3b563; } .ds-btn-primary:focus-visible { outline: 2px solid #e3b563; outline-offset: 2px; }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Hairline-outline button for secondary actions alongside a primary CTA.",
+      "html": "<button class=\"ds-btn-secondary\">Create an account</button>",
+      "css": ".ds-btn-secondary { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: transparent; color: #f2ece1; border: 1px solid #3a3226; border-radius: 2px; padding: 8px 16px; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 600; font-size: 0.875rem; cursor: pointer; transition: border-color 0.15s, color 0.15s; } .ds-btn-secondary:hover { border-color: #c9973f; color: #e3b563; } .ds-btn-secondary:focus-visible { outline: 2px solid #e3b563; outline-offset: 2px; }"
+    },
+    {
+      "name": "Status Indicator (lit)",
+      "kind": "custom",
+      "refersTo": "status-indicator",
+      "description": "The lit/dormant status grammar in its active state — used for subscription, license, and tool-availability status.",
+      "html": "<span class=\"ds-status\"><span class=\"ds-status-dot ds-status-dot--lit\"></span><span class=\"ds-status-label ds-status-label--lit\">Active</span></span>",
+      "css": ".ds-status { display: inline-flex; align-items: center; gap: 8px; font-size: 0.875rem; font-family: 'Plus Jakarta Sans', sans-serif; } .ds-status-dot { display: inline-block; width: 8px; height: 8px; border-radius: 999px; flex-shrink: 0; } .ds-status-dot--lit { background: #e3b563; box-shadow: 0 0 0 3px rgba(227,181,99,0.22), 0 0 10px 1px rgba(227,181,99,0.55); } .ds-status-label--lit { color: #e3b563; font-weight: 500; }"
+    },
+    {
+      "name": "Status Indicator (dormant)",
+      "kind": "custom",
+      "refersTo": "status-indicator",
+      "description": "The lit/dormant status grammar in its inactive state.",
+      "html": "<span class=\"ds-status\"><span class=\"ds-status-dot ds-status-dot--dormant\"></span><span class=\"ds-status-label\">In development</span></span>",
+      "css": ".ds-status { display: inline-flex; align-items: center; gap: 8px; font-size: 0.875rem; font-family: 'Plus Jakarta Sans', sans-serif; } .ds-status-dot { display: inline-block; width: 8px; height: 8px; border-radius: 999px; flex-shrink: 0; } .ds-status-dot--dormant { background: transparent; border: 1.5px solid #a89e8c; opacity: 0.6; } .ds-status-label { color: #a89e8c; }"
+    },
+    {
+      "name": "Field Input",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Text input used across login, register, and admin forms.",
+      "html": "<label class=\"ds-label\" for=\"ds-email\">Email</label><input id=\"ds-email\" class=\"ds-input\" type=\"email\" placeholder=\"you@agency.com\" />",
+      "css": ".ds-label { display: block; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: #a89e8c; margin-bottom: 6px; } .ds-input { width: 100%; background: #15120e; color: #f2ece1; border: 1px solid #3a3226; border-radius: 2px; padding: 8px 12px; font-size: 0.875rem; font-family: 'Plus Jakarta Sans', sans-serif; transition: border-color 0.15s; } .ds-input::placeholder { color: rgba(168,158,140,0.6); } .ds-input:focus-visible { border-color: #e3b563; outline: none; }"
+    },
+    {
+      "name": "Lattice Grid Cell",
+      "kind": "card",
+      "refersTo": "lattice-cell",
+      "description": "One entry in the tool-suite / admin-overview lattice grid: shared hairline borders instead of a boxed, shadowed card.",
+      "html": "<div class=\"ds-lattice\"><a class=\"ds-lattice-cell\" href=\"#\"><div class=\"ds-lattice-row\"><span class=\"ds-lattice-index\">No. 01</span></div><h3 class=\"ds-lattice-title\">SEO &amp; Keyword Toolkit</h3><p class=\"ds-lattice-desc\">Keyword research and on-page recommendations.</p></a></div>",
+      "css": ".ds-lattice { display: grid; grid-template-columns: 1fr; border-left: 1px solid #3a3226; border-top: 1px solid #3a3226; } .ds-lattice-cell { display: flex; flex-direction: column; gap: 12px; padding: 24px; border-bottom: 1px solid #3a3226; border-right: 1px solid #3a3226; text-decoration: none; transition: background-color 0.15s; } .ds-lattice-cell:hover { background: #1c1812; } .ds-lattice-index { font-family: 'Space Mono', monospace; font-size: 0.75rem; color: #6b5730; } .ds-lattice-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.25rem; letter-spacing: -0.01em; color: #f2ece1; } .ds-lattice-desc { font-size: 0.875rem; color: #a89e8c; }"
+    },
+    {
+      "name": "Navbar",
+      "kind": "nav",
+      "refersTo": "navbar",
+      "description": "Top chrome: split-color wordmark, hairline bottom border, muted links that brighten to gold on hover.",
+      "html": "<header class=\"ds-navbar\"><a class=\"ds-wordmark\" href=\"#\">DEVCOM<span class=\"ds-wordmark-accent\">DIGITAL</span></a><nav class=\"ds-nav-links\"><a href=\"#\">Pricing</a><a href=\"#\">Log in</a><a class=\"ds-nav-cta\" href=\"#\">Get started</a></nav></header>",
+      "css": ".ds-navbar { display: flex; align-items: center; justify-content: space-between; padding: 20px 24px; border-bottom: 1px solid #3a3226; background: #15120e; } .ds-wordmark { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.125rem; letter-spacing: -0.01em; color: #f2ece1; text-decoration: none; } .ds-wordmark-accent { color: #c9973f; } .ds-nav-links { display: flex; align-items: center; gap: 28px; font-size: 0.875rem; } .ds-nav-links a { color: #a89e8c; text-decoration: none; transition: color 0.15s; } .ds-nav-links a:hover { color: #e3b563; } .ds-nav-cta { background: #c9973f; color: #15120e; font-weight: 600; padding: 8px 16px; border-radius: 2px; } .ds-nav-cta:hover { background: #e3b563; color: #15120e; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Trophy Room",
+    "overview": "The suite is presented as a curated shelf of entries worth walking into, not a generic SaaS feature grid. A warm charcoal ground and a single committed brass/gold accent do the work that a multi-color palette would do elsewhere: gold is rare, and its rarity is what makes it read as an award rather than decoration. The site refuses boxed drop-shadow cards; instead, hairline rules divide space, and repeating collections (the tool suite, admin overview cards) share border lines in a grid so that no single item gets its own frame — everyone stands on the same shelf.\n\nThe type system pairs an oversized, confident display grotesk (Syne) for headlines with a workmanlike body sans (Plus Jakarta Sans) and a tabular monospace (Space Mono) reserved specifically for counted, priced, or keyed values — price, tool index numbers, step numbers, the license key itself. This is a deliberate signal: numbers that matter to a billing, licensing product get a distinct, precise typographic register from prose.\n\nA single state grammar — lit vs. dormant — carries every \"is this on\" question in the product: subscription status, license validity, tool availability. It is never a soft rounded badge alone; it is always a dot (filled and glowing when lit, hollow and dim when dormant) paired with text that shifts color with it. This grammar is threaded identically from the public marketing pages through the authenticated dashboard and tools area.",
+    "keyCharacteristics": [
+      "Warm charcoal ground, one committed gold accent, no second hue",
+      "Hairline-rule \"lattice\" grids instead of boxed/shadowed cards",
+      "Syne display headlines, Plus Jakarta Sans body, Space Mono for all tabular/counted/keyed values",
+      "Lit-vs-dormant status grammar (glow + bright text / hollow ring + dim text), reused everywhere status appears",
+      "Flat by default; no resting-state shadows"
+    ],
+    "rules": [
+      { "name": "The One Accent Rule", "body": "Gold is the only chromatic color in the system (outside the danger button variant's default Tailwind red, used solely for destructive admin actions). Every other value is charcoal, parchment, or a tint between them.", "section": "colors" },
+      { "name": "The Lit/Dormant Rule", "body": "Any binary \"is this active\" state renders as a status dot (filled + glowing gold-bright when lit, hollow ring + paper-dim at 0.6 opacity when dormant) paired with text that shifts color with it. Never a rounded badge alone.", "section": "colors" },
+      { "name": "The Countable-Numbers Rule", "body": "Any number the user counts, is billed, or must copy exactly renders in font-mono with tabular-nums. Prose numbers stay in the body font.", "section": "typography" },
+      { "name": "The Flat-By-Default Rule", "body": "Surfaces are flat at rest. The only shadow in the system belongs to the mobile navigation's floating overlay panel; it is not a general-purpose elevation token.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do reserve gold/gold-bright as the only chromatic accent; keep everything else on the ink/paper/hairline scale.",
+      "Do use the lattice-grid pattern (shared hairline borders, no per-cell shadow or individual frame) for any repeating collection of entries.",
+      "Do render every on/off product state through StatusIndicator's lit/dormant grammar rather than a new badge style.",
+      "Do set font-mono + tabular-nums on any price, count, index number, or key the user might copy or compare.",
+      "Do keep the uppercase Label typographic role scoped to functional field/section labels, not decorative copy."
+    ],
+    "donts": [
+      "Don't add drop shadows to resting-state buttons, inputs, or lattice-grid cells — the system is flat by default; the mobile-nav overlay's shadow-lg is a scoped exception for floating menus, not a general elevation token.",
+      "Don't introduce a second accent hue. The one-gold-accent constraint is what makes the \"one credential\" pitch legible; a second color competes with it.",
+      "Don't box individual items in the lattice-grid pattern with their own border/shadow — the shared-hairline lattice is the point; a boxed card here would be reverting to the generic SaaS grid the direction explicitly rejects.",
+      "Don't use kicker/eyebrow copy above headlines. No page in the shipped build uses one; the uppercase label style exists only for functional field and section-group labels."
+    ]
+  }
+}

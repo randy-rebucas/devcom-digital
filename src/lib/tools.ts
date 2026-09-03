@@ -8,6 +8,11 @@ export const TOOL_STATUS_LABELS: Record<ToolStatus, string> = {
   AVAILABLE: "Available",
 };
 
+export const TOOL_STATUS_LIT: Record<ToolStatus, boolean> = {
+  IN_DEVELOPMENT: false,
+  AVAILABLE: true,
+};
+
 export function listTools() {
   return prisma.tool.findMany({ orderBy: { order: "asc" } });
 }

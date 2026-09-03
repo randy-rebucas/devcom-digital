@@ -1,5 +1,6 @@
 import { auth, signOut } from "@/lib/auth";
 import { AdminMenu } from "@/components/admin-menu";
+import { MobileNav } from "@/components/mobile-nav";
 import { PublicNavLinks, GuestNavLinks, AuthedNavLinks } from "@/components/nav-links";
 import Link from "next/link";
 
@@ -7,12 +8,15 @@ export async function Navbar() {
   const session = await auth();
 
   return (
-    <header className="border-b border-neutral-200 dark:border-neutral-800">
-      <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-        <Link href="/" className="text-lg font-semibold tracking-tight">
-          Devcom<span className="text-indigo-600">Digital</span>
+    <header className="relative border-b border-hairline">
+      <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
+        <Link
+          href="/"
+          className="font-display text-lg font-bold tracking-tight text-paper"
+        >
+          DEVCOM<span className="text-gold">DIGITAL</span>
         </Link>
-        <nav className="flex items-center gap-6 text-sm">
+        <nav className="hidden items-center gap-7 text-sm sm:flex">
           {session?.user ? (
             <>
               <AuthedNavLinks />
@@ -23,7 +27,9 @@ export async function Navbar() {
                   await signOut({ redirectTo: "/" });
                 }}
               >
-                <button className="hover:text-indigo-600">Sign out</button>
+                <button className="text-paper-dim transition-colors hover:text-gold-bright">
+                  Sign out
+                </button>
               </form>
             </>
           ) : (
@@ -33,6 +39,10 @@ export async function Navbar() {
             </>
           )}
         </nav>
+        <MobileNav
+          isAuthed={Boolean(session?.user)}
+          isAdmin={session?.user?.role === "ADMIN"}
+        />
       </div>
     </header>
   );

@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { ButtonLink } from "@/components/ui/button";
 
 declare global {
   interface Window {
@@ -40,7 +41,7 @@ export function PaypalSubscribeButton({
       containerRef.current.innerHTML = "";
       window.paypal
         .Buttons({
-          style: { shape: "pill", color: "blue", layout: "vertical" },
+          style: { shape: "pill", color: "black", layout: "vertical" },
           createSubscription: (
             _data: unknown,
             actions: { subscription: { create: (opts: unknown) => Promise<string> } }
@@ -79,12 +80,9 @@ export function PaypalSubscribeButton({
 
   if (!isLoggedIn) {
     return (
-      <a
-        href="/register"
-        className="block w-full rounded-md bg-indigo-600 px-4 py-2 text-center font-medium text-white hover:bg-indigo-500"
-      >
+      <ButtonLink href="/register" className="w-full">
         Create an account to subscribe
-      </a>
+      </ButtonLink>
     );
   }
 
@@ -92,10 +90,10 @@ export function PaypalSubscribeButton({
     <div>
       <div ref={containerRef} />
       {status === "processing" && (
-        <p className="mt-2 text-sm text-neutral-500">Activating your subscription…</p>
+        <p className="mt-2 text-sm text-paper-dim">Activating your subscription…</p>
       )}
       {status === "error" && (
-        <p className="mt-2 text-sm text-red-600">
+        <p className="mt-2 text-sm text-red-400">
           Something went wrong confirming your subscription. Please try again.
         </p>
       )}

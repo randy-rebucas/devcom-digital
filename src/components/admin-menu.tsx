@@ -14,6 +14,12 @@ export function AdminMenu() {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
+  const [lastPathname, setLastPathname] = useState(pathname);
+
+  if (pathname !== lastPathname) {
+    setLastPathname(pathname);
+    setOpen(false);
+  }
 
   useEffect(() => {
     function onClickOutside(e: MouseEvent) {
@@ -25,16 +31,12 @@ export function AdminMenu() {
     return () => document.removeEventListener("mousedown", onClickOutside);
   }, []);
 
-  useEffect(() => {
-    setOpen(false);
-  }, [pathname]);
-
   return (
     <div ref={ref} className="relative">
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="flex items-center gap-1 hover:text-indigo-600"
+        className="flex items-center gap-1 text-paper-dim transition-colors hover:text-gold-bright"
         aria-haspopup="menu"
         aria-expanded={open}
       >
@@ -54,14 +56,14 @@ export function AdminMenu() {
       {open && (
         <div
           role="menu"
-          className="absolute right-0 z-10 mt-2 w-44 overflow-hidden rounded-md border border-neutral-200 bg-white shadow-lg dark:border-neutral-800 dark:bg-neutral-900"
+          className="absolute right-0 z-10 mt-2 w-44 overflow-hidden rounded-sm border border-hairline bg-ink-raised shadow-lg"
         >
           {ADMIN_LINKS.map((link) => (
             <Link
               key={link.href}
               href={link.href}
               role="menuitem"
-              className="block px-4 py-2 text-sm hover:bg-neutral-100 dark:hover:bg-neutral-800"
+              className="block px-4 py-2 text-sm text-paper-dim hover:bg-ink hover:text-paper"
             >
               {link.label}
             </Link>

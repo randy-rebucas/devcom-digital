@@ -3,7 +3,7 @@ import Link from "next/link";
 // Visible to every visitor, signed in or not.
 export function PublicNavLinks() {
   return (
-    <Link href="/pricing" className="hover:text-indigo-600">
+    <Link href="/pricing" className="text-paper-dim transition-colors hover:text-gold-bright">
       Pricing
     </Link>
   );
@@ -13,12 +13,12 @@ export function PublicNavLinks() {
 export function GuestNavLinks() {
   return (
     <>
-      <Link href="/login" className="hover:text-indigo-600">
+      <Link href="/login" className="text-paper-dim transition-colors hover:text-gold-bright">
         Log in
       </Link>
       <Link
         href="/register"
-        className="rounded-md bg-indigo-600 px-4 py-2 font-medium text-white hover:bg-indigo-500"
+        className="rounded-sm bg-gold px-4 py-2 font-semibold text-ink transition-colors hover:bg-gold-bright"
       >
         Get started
       </Link>
@@ -30,10 +30,10 @@ export function GuestNavLinks() {
 export function AuthedNavLinks() {
   return (
     <>
-      <Link href="/dashboard" className="hover:text-indigo-600">
+      <Link href="/dashboard" className="text-paper-dim transition-colors hover:text-gold-bright">
         Dashboard
       </Link>
-      <Link href="/tools" className="hover:text-indigo-600">
+      <Link href="/tools" className="text-paper-dim transition-colors hover:text-gold-bright">
         Tools
       </Link>
     </>

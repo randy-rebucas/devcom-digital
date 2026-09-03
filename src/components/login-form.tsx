@@ -1,13 +1,22 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 
 export function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  const verified = searchParams.get("verified");
+  const notice =
+    verified === "1"
+      ? "Email verified. You can now sign in."
+      : verified === "0"
+        ? "That verification link is invalid or has expired."
+        : null;
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -24,7 +33,11 @@ export function LoginForm() {
     setLoading(false);
 
     if (res?.error) {
-      setError("Invalid email or password.");
+      if (res.code === "email-not-verified") {
+        setError("Please verify your email before signing in. Check your inbox for the verification link.");
+      } else {
+        setError("Invalid email or password.");
+      }
       return;
     }
 
@@ -34,6 +47,11 @@ export function LoginForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
+      {notice && !error && (
+        <p className="rounded-md bg-neutral-100 px-3 py-2 text-sm text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300">
+          {notice}
+        </p>
+      )}
       {error && (
         <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-950 dark:text-red-400">
           {error}

@@ -1,13 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { signIn } from "next-auth/react";
 
 export function RegisterForm() {
-  const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [submittedEmail, setSubmittedEmail] = useState<string | null>(null);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -27,28 +25,24 @@ export function RegisterForm() {
       body: JSON.stringify(payload),
     });
 
+    setLoading(false);
+
     if (!res.ok) {
       const data = await res.json().catch(() => ({}));
       setError(data.error ?? "Something went wrong.");
-      setLoading(false);
       return;
     }
 
-    const signInRes = await signIn("credentials", {
-      email: payload.email,
-      password: payload.password,
-      redirect: false,
-    });
+    setSubmittedEmail(String(payload.email));
+  }
 
-    setLoading(false);
-
-    if (signInRes?.error) {
-      router.push("/login");
-      return;
-    }
-
-    router.push("/pricing");
-    router.refresh();
+  if (submittedEmail) {
+    return (
+      <p className="rounded-md bg-neutral-100 px-3 py-2 text-sm text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300">
+        We sent a verification link to <strong>{submittedEmail}</strong>. Click
+        it to activate your account, then log in.
+      </p>
+    );
   }
 
   return (

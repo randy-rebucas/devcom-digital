@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import Link from "next/link";
 import { Navbar } from "@/components/navbar";
 import { LoginForm } from "@/components/login-form";
@@ -13,7 +14,9 @@ export default function LoginPage() {
             Access your Devcom Digital dashboard and license key.
           </p>
           <div className="mt-6">
-            <LoginForm />
+            <Suspense fallback={null}>
+              <LoginForm />
+            </Suspense>
           </div>
           <p className="mt-6 text-sm text-neutral-500">
             No account yet?{" "}

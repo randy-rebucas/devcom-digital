@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { verifyWebhookSignature } from "@/lib/paypal";
 import { issueLicenseForUser, revokeLicenseForUser } from "@/lib/license";
+import { sendSubscriptionReceiptEmail } from "@/lib/mail";
 
 const ACTIVE_EVENTS = new Set([
   "BILLING.SUBSCRIPTION.ACTIVATED",
@@ -69,7 +70,21 @@ export async function POST(req: Request) {
       where: { paypalSubscriptionId },
       data: { status: "ACTIVE" },
     });
-    await issueLicenseForUser(subscription.userId);
+    const license = await issueLicenseForUser(subscription.userId);
+    const user = await prisma.user.findUnique({
+      where: { id: subscription.userId },
+    });
+    if (user) {
+      try {
+        await sendSubscriptionReceiptEmail(
+          user.email,
+          user.name ?? "there",
+          license.key
+        );
+      } catch (err) {
+        console.error("Failed to send subscription receipt email", err);
+      }
+    }
   } else if (eventType in INACTIVE_EVENTS) {
     await prisma.subscription.update({
       where: { paypalSubscriptionId },

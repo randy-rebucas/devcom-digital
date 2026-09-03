@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
+import { sendVerificationEmail } from "@/lib/mail";
+import { createVerificationToken } from "@/lib/verification";
 
 const schema = z.object({
   name: z.string().min(1).max(100),
@@ -30,6 +32,15 @@ export async function POST(req: Request) {
   await prisma.user.create({
     data: { name, email, password: hashed },
   });
+
+  const token = await createVerificationToken(email);
+  const verifyUrl = `${process.env.NEXTAUTH_URL}/api/verify-email?token=${token}&email=${encodeURIComponent(email)}`;
+
+  try {
+    await sendVerificationEmail(email, name, verifyUrl);
+  } catch (err) {
+    console.error("Failed to send verification email", err);
+  }
 
   return NextResponse.json({ ok: true });
 }

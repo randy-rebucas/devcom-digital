@@ -3,6 +3,8 @@ import { Navbar } from "@/components/navbar";
 import { ToolStatusBadge } from "@/components/tool-status-badge";
 import { ButtonLink } from "@/components/ui/button";
 import { listEnabledTools, stripMarkdown } from "@/lib/tools";
+import { listEnabledProjects, stripMarkdown as stripProjectMarkdown } from "@/lib/projects";
+import { ProjectStatusBadge } from "@/components/project-status-badge";
 
 const STEPS = [
   {
@@ -23,7 +25,8 @@ const STEPS = [
 ];
 
 export default async function Home() {
-  const tools = await listEnabledTools();
+  const tools: any[] = await listEnabledTools();
+  const projects = await listEnabledProjects();
 
   return (
     <>
@@ -83,6 +86,50 @@ export default async function Home() {
                       </h3>
                       <p className="line-clamp-2 text-sm text-paper-dim">
                         {stripMarkdown(tool.desc)}
+                      </p>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </section>
+
+        <section className="border-t border-hairline">
+          <div className="mx-auto max-w-6xl px-6 py-16 sm:py-20">
+            <div className="flex items-baseline justify-between gap-4">
+              <h2 className="font-display text-2xl font-bold tracking-tight text-paper sm:text-3xl">
+                Projects
+              </h2>
+              <span className="font-mono text-sm text-paper-dim tabular-nums">
+                {projects.length.toString().padStart(2, "0")} project
+                {projects.length === 1 ? "" : "s"}
+              </span>
+            </div>
+
+            {projects.length === 0 ? (
+              <p className="mt-10 border-t border-hairline pt-8 text-paper-dim">
+                Projects are on the way — check back soon.
+              </p>
+            ) : (
+              <ul className="mt-8 grid grid-cols-1 border-l border-t border-hairline sm:grid-cols-2">
+                {projects.map((project, i) => (
+                  <li key={project.slug} className="border-b border-r border-hairline">
+                    <Link
+                      href={`/projects/${project.slug}`}
+                      className="group flex h-full flex-col gap-3 p-6 transition-colors hover:bg-ink-raised"
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <span className="font-mono text-xs text-gold-dim">
+                          No. {(i + 1).toString().padStart(2, "0")}
+                        </span>
+                        <ProjectStatusBadge status={project.status} className="shrink-0" />
+                      </div>
+                      <h3 className="font-display text-xl font-bold tracking-tight text-paper group-hover:text-gold-bright">
+                        {project.name}
+                      </h3>
+                      <p className="line-clamp-2 text-sm text-paper-dim">
+                        {stripProjectMarkdown(project.desc)}
                       </p>
                     </Link>
                   </li>

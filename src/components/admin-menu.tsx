@@ -7,6 +7,7 @@ import { useEffect, useRef, useState } from "react";
 const ADMIN_LINKS = [
   { href: "/admin", label: "Overview" },
   { href: "/admin/tools", label: "Tools" },
+  { href: "/admin/projects", label: "Projects" },
   { href: "/admin/users", label: "Users" },
 ];
 

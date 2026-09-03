@@ -8,6 +8,7 @@ import { useState } from "react";
 const ADMIN_LINKS = [
   { href: "/admin", label: "Admin overview" },
   { href: "/admin/tools", label: "Manage tools" },
+  { href: "/admin/projects", label: "Manage projects" },
   { href: "/admin/users", label: "Manage users" },
 ];
 
@@ -60,6 +61,7 @@ export function MobileNav({
               <>
                 <MobileLink href="/dashboard">Dashboard</MobileLink>
                 <MobileLink href="/tools">Tools</MobileLink>
+                <MobileLink href="/projects">Projects</MobileLink>
                 {isAdmin && (
                   <>
                     <div className="mt-2 border-t border-hairline pt-2" />
@@ -79,6 +81,7 @@ export function MobileNav({
               </>
             ) : (
               <>
+                <MobileLink href="/projects">Projects</MobileLink>
                 <MobileLink href="/pricing">Pricing</MobileLink>
                 <MobileLink href="/login">Log in</MobileLink>
                 <Link

@@ -25,6 +25,11 @@ enum ToolStatus {
   AVAILABLE
 }
 
+enum ProjectStatus {
+  IN_PROGRESS
+  COMPLETED
+}
+
 model User {
   id            String    @id @default(cuid())
   name          String?
@@ -36,10 +41,10 @@ model User {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
-  accounts      Account[]
-  sessions      Session[]
-  subscription  Subscription?
-  license       License?
+  accounts     Account[]
+  sessions     Session[]
+  subscription Subscription?
+  license      License?
 }
 
 model Account {
@@ -78,26 +83,26 @@ model VerificationToken {
 }
 
 model Subscription {
-  id                     String             @id @default(cuid())
-  userId                 String             @unique
-  user                   User               @relation(fields: [userId], references: [id], onDelete: Cascade)
-  paypalSubscriptionId   String             @unique
-  paypalPlanId           String
-  status                 SubscriptionStatus @default(PENDING)
-  currentPeriodStart     DateTime?
-  currentPeriodEnd       DateTime?
-  createdAt              DateTime           @default(now())
-  updatedAt              DateTime           @updatedAt
+  id                   String             @id @default(cuid())
+  userId               String             @unique
+  user                 User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  paypalSubscriptionId String             @unique
+  paypalPlanId         String
+  status               SubscriptionStatus @default(PENDING)
+  currentPeriodStart   DateTime?
+  currentPeriodEnd     DateTime?
+  createdAt            DateTime           @default(now())
+  updatedAt            DateTime           @updatedAt
 }
 
 model License {
-  id          String    @id @default(cuid())
-  userId      String    @unique
-  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  key         String    @unique
-  active      Boolean   @default(true)
-  createdAt   DateTime  @default(now())
-  revokedAt   DateTime?
+  id        String    @id @default(cuid())
+  userId    String    @unique
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  key       String    @unique
+  active    Boolean   @default(true)
+  createdAt DateTime  @default(now())
+  revokedAt DateTime?
 }
 
 model Tool {
@@ -114,4 +119,19 @@ model Tool {
   order              Int        @default(0)
   createdAt          DateTime   @default(now())
   updatedAt          DateTime   @updatedAt
+}
+
+model Project {
+  id        String        @id @default(cuid())
+  slug      String        @unique
+  name      String
+  desc      String        @db.Text
+  imageUrl  String?
+  status    ProjectStatus @default(IN_PROGRESS)
+  liveUrl   String?
+  repoUrl   String?
+  enabled   Boolean       @default(true)
+  order     Int           @default(0)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
 }

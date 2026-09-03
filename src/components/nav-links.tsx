@@ -3,9 +3,14 @@ import Link from "next/link";
 // Visible to every visitor, signed in or not.
 export function PublicNavLinks() {
   return (
-    <Link href="/pricing" className="text-paper-dim transition-colors hover:text-gold-bright">
-      Pricing
-    </Link>
+    <>
+      <Link href="/projects" className="text-paper-dim transition-colors hover:text-gold-bright">
+        Projects
+      </Link>
+      <Link href="/pricing" className="text-paper-dim transition-colors hover:text-gold-bright">
+        Pricing
+      </Link>
+    </>
   );
 }
 
@@ -35,6 +40,9 @@ export function AuthedNavLinks() {
       </Link>
       <Link href="/tools" className="text-paper-dim transition-colors hover:text-gold-bright">
         Tools
+      </Link>
+      <Link href="/projects" className="text-paper-dim transition-colors hover:text-gold-bright">
+        Projects
       </Link>
     </>
   );

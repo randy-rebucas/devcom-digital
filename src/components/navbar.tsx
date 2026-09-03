@@ -1,5 +1,7 @@
-import Link from "next/link";
 import { auth, signOut } from "@/lib/auth";
+import { AdminMenu } from "@/components/admin-menu";
+import { PublicNavLinks, GuestNavLinks, AuthedNavLinks } from "@/components/nav-links";
+import Link from "next/link";
 
 export async function Navbar() {
   const session = await auth();
@@ -11,14 +13,10 @@ export async function Navbar() {
           Devcom<span className="text-indigo-600">Digital</span>
         </Link>
         <nav className="flex items-center gap-6 text-sm">
-          <Link href="/pricing" className="hover:text-indigo-600">
-            Pricing
-          </Link>
           {session?.user ? (
             <>
-              <Link href="/dashboard" className="hover:text-indigo-600">
-                Dashboard
-              </Link>
+              <AuthedNavLinks />
+              {session.user.role === "ADMIN" && <AdminMenu />}
               <form
                 action={async () => {
                   "use server";
@@ -30,15 +28,8 @@ export async function Navbar() {
             </>
           ) : (
             <>
-              <Link href="/login" className="hover:text-indigo-600">
-                Log in
-              </Link>
-              <Link
-                href="/register"
-                className="rounded-md bg-indigo-600 px-4 py-2 font-medium text-white hover:bg-indigo-500"
-              >
-                Get started
-              </Link>
+              <PublicNavLinks />
+              <GuestNavLinks />
             </>
           )}
         </nav>

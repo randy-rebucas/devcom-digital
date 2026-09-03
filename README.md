@@ -1,4 +1,4 @@
-# Devcom Digital Marketing Services
+# Devcom
 
 Marketing site + subscription-gated digital tools for **Devcom Digital Marketing Services**. Users register, subscribe via PayPal, and receive a unique license key that unlocks the tools dashboard for as long as their subscription is active.
 
@@ -35,6 +35,20 @@ Marketing site + subscription-gated digital tools for **Devcom Digital Marketing
    ```bash
    npm run dev
    ```
+5. (Optional) Seed a demo account with an active subscription, license, and admin role:
+   ```bash
+   npx prisma db seed
+   ```
+
+## Demo account
+
+| Field    | Value                     |
+| -------- | ------------------------- |
+| Email    | `demo@devcomdigital.com`  |
+| Password | `demo12345`                |
+| Role     | `ADMIN`                    |
+
+Seeded via `prisma/seed.ts` with an active subscription and license key so it can access `/tools` immediately.
 
 ## Notes
 

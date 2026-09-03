@@ -15,6 +15,16 @@ enum SubscriptionStatus {
   PENDING
 }
 
+enum Role {
+  ADMIN
+  MEMBER
+}
+
+enum ToolStatus {
+  IN_DEVELOPMENT
+  AVAILABLE
+}
+
 model User {
   id            String    @id @default(cuid())
   name          String?
@@ -22,6 +32,7 @@ model User {
   emailVerified DateTime?
   password      String?
   image         String?
+  role          Role      @default(MEMBER)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
@@ -87,4 +98,20 @@ model License {
   active      Boolean   @default(true)
   createdAt   DateTime  @default(now())
   revokedAt   DateTime?
+}
+
+model Tool {
+  id                 String     @id @default(cuid())
+  slug               String     @unique
+  name               String
+  desc               String     @db.Text
+  imageUrl           String?
+  status             ToolStatus @default(IN_DEVELOPMENT)
+  guideUrl           String?
+  downloadUrl        String?
+  requiresLicenseKey Boolean    @default(false)
+  enabled            Boolean    @default(true)
+  order              Int        @default(0)
+  createdAt          DateTime   @default(now())
+  updatedAt          DateTime   @updatedAt
 }

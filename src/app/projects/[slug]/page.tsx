@@ -1,9 +1,35 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import ReactMarkdown from "react-markdown";
 import { Navbar } from "@/components/navbar";
 import { ProjectStatusBadge } from "@/components/project-status-badge";
-import { getEnabledProjectBySlug } from "@/lib/projects";
+import { getEnabledProjectBySlug, stripMarkdown } from "@/lib/projects";
+import { SITE_URL } from "@/lib/seo";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const project = await getEnabledProjectBySlug(slug);
+  if (!project) return {};
+
+  const description = stripMarkdown(project.desc).slice(0, 160);
+  return {
+    title: project.name,
+    description,
+    alternates: { canonical: `/projects/${project.slug}` },
+    openGraph: {
+      type: "article",
+      url: `/projects/${project.slug}`,
+      title: `${project.name} | Devcom Digital`,
+      description,
+      images: project.imageUrl ? [project.imageUrl] : undefined,
+    },
+  };
+}
 
 export default async function ProjectDetailPage({
   params,
@@ -14,8 +40,21 @@ export default async function ProjectDetailPage({
   const project = await getEnabledProjectBySlug(slug);
   if (!project) notFound();
 
+  const projectJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "CreativeWork",
+    name: project.name,
+    description: stripMarkdown(project.desc).slice(0, 300),
+    url: `${SITE_URL}/projects/${project.slug}`,
+    image: project.imageUrl || undefined,
+  };
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(projectJsonLd) }}
+      />
       <Navbar />
       <main className="flex-1 px-6 py-16">
         <div className="mx-auto max-w-2xl">

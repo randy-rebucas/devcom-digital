@@ -25,29 +25,31 @@ const STEPS = [
 ];
 
 export default async function Home() {
-  const tools: any[] = await listEnabledTools();
+  const tools = await listEnabledTools();
   const projects = await listEnabledProjects();
 
   return (
     <>
       <Navbar />
       <main className="flex-1">
-        <section className="mx-auto max-w-6xl px-6 pb-20 pt-20 sm:pb-28 sm:pt-28">
-          <h1 className="max-w-3xl font-display text-5xl font-bold leading-[1.05] tracking-tight text-paper sm:text-7xl">
-            Every marketing tool.
-            <br />
-            <span className="text-gold">One credential.</span>
-          </h1>
-          <p className="mt-8 max-w-xl text-lg leading-relaxed text-paper-dim">
-            One subscription, one license key, the whole Devcom Digital suite.
-          </p>
-          <div className="mt-10 flex flex-wrap gap-4">
-            <ButtonLink href="/pricing" size="lg">
-              View pricing
-            </ButtonLink>
-            <ButtonLink href="/register" variant="secondary" size="lg">
-              Create an account
-            </ButtonLink>
+        <section>
+          <div className="mx-auto max-w-6xl px-6 pb-20 pt-24 sm:pb-28 sm:pt-32">
+            <h1 className="max-w-3xl text-balance font-display text-5xl font-bold leading-[1.05] tracking-tight text-paper sm:text-7xl">
+              Every marketing tool.
+              <br />
+              <span className="text-gold">One credential.</span>
+            </h1>
+            <p className="mt-8 max-w-xl text-lg leading-relaxed text-paper-dim">
+              One subscription, one license key, the whole Devcom Digital suite.
+            </p>
+            <div className="mt-10 flex flex-wrap gap-4">
+              <ButtonLink href="/pricing" size="lg">
+                View pricing
+              </ButtonLink>
+              <ButtonLink href="/register" variant="secondary" size="lg">
+                Create an account
+              </ButtonLink>
+            </div>
           </div>
         </section>
 

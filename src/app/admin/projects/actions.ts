@@ -21,7 +21,12 @@ function slugify(input: string) {
     .replace(/(^-|-$)/g, "");
 }
 
-export async function createProject(formData: FormData) {
+export type ProjectFormState = { error?: string } | undefined;
+
+export async function createProject(
+  _prevState: ProjectFormState,
+  formData: FormData,
+): Promise<ProjectFormState> {
   await requireAdmin();
 
   const name = String(formData.get("name") ?? "").trim();
@@ -34,7 +39,9 @@ export async function createProject(formData: FormData) {
   const slugInput = String(formData.get("slug") ?? "").trim();
   const slug = slugify(slugInput || name);
 
-  if (!name || !desc || !slug) return;
+  if (!name || !desc || !slug) {
+    return { error: "Name and description are required." };
+  }
 
   const count = await prisma.project.count();
 
@@ -58,7 +65,11 @@ export async function createProject(formData: FormData) {
   redirect("/admin/projects");
 }
 
-export async function updateProject(id: string, formData: FormData) {
+export async function updateProject(
+  id: string,
+  _prevState: ProjectFormState,
+  formData: FormData,
+): Promise<ProjectFormState> {
   await requireAdmin();
 
   const name = String(formData.get("name") ?? "").trim();
@@ -71,7 +82,9 @@ export async function updateProject(id: string, formData: FormData) {
   const slugInput = String(formData.get("slug") ?? "").trim();
   const slug = slugify(slugInput || name);
 
-  if (!name || !desc || !slug) return;
+  if (!name || !desc || !slug) {
+    return { error: "Name and description are required." };
+  }
 
   await prisma.project.update({
     where: { id },

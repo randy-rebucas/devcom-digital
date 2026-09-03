@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Syne, Plus_Jakarta_Sans, Space_Mono } from "next/font/google";
 import { Footer } from "@/components/footer";
+import { SITE_NAME, SITE_DESCRIPTION, SITE_URL } from "@/lib/seo";
 import "./globals.css";
 
 const syne = Syne({
@@ -22,9 +23,63 @@ const spaceMono = Space_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Devcom Digital Marketing Services",
-  description:
-    "Devcom Digital Marketing Services — subscribe to unlock our licensed digital marketing tools.",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: SITE_NAME,
+    template: `%s | ${SITE_NAME}`,
+  },
+  description: SITE_DESCRIPTION,
+  applicationName: SITE_NAME,
+  keywords: [
+    "marketing tools suite",
+    "digital marketing subscription",
+    "SEO keyword research tool",
+    "social content scheduler",
+    "campaign analytics",
+    "ad creative generator",
+    "marketing agency tools",
+  ],
+  alternates: {
+    canonical: "/",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+    },
+  },
+  openGraph: {
+    type: "website",
+    url: "/",
+    siteName: SITE_NAME,
+    title: SITE_NAME,
+    description: SITE_DESCRIPTION,
+    locale: "en_US",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: SITE_NAME,
+    description: SITE_DESCRIPTION,
+  },
+};
+
+const organizationJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: SITE_NAME,
+  alternateName: "Devcom Digital",
+  url: SITE_URL,
+  description: SITE_DESCRIPTION,
+};
+
+const websiteJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: SITE_NAME,
+  url: SITE_URL,
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
@@ -34,6 +89,14 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${syne.variable} ${jakarta.variable} ${spaceMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-ink text-paper">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
+        />
         {children}
         <Footer />
       </body>

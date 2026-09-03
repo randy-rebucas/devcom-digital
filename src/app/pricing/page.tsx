@@ -1,12 +1,44 @@
+import type { Metadata } from "next";
 import { Navbar } from "@/components/navbar";
 import { PaypalSubscribeButton } from "@/components/paypal-subscribe-button";
 import { auth } from "@/lib/auth";
+import { SITE_NAME } from "@/lib/seo";
 
 const INCLUDED = [
   "Full digital tools suite",
   "Personal license key",
   "Cancel anytime via PayPal",
 ];
+
+const DESCRIPTION =
+  "One plan, $29/mo: full access to the Devcom Digital marketing tools suite with a personal license key, billed via PayPal.";
+
+export const metadata: Metadata = {
+  title: "Pricing",
+  description: DESCRIPTION,
+  alternates: { canonical: "/pricing" },
+  openGraph: {
+    url: "/pricing",
+    title: `Pricing | ${SITE_NAME}`,
+    description: DESCRIPTION,
+  },
+};
+
+const productJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Product",
+  name: "Devcom Digital Pro Toolkit",
+  description: DESCRIPTION,
+  brand: { "@type": "Brand", name: SITE_NAME },
+  offers: {
+    "@type": "Offer",
+    price: "29",
+    priceCurrency: "USD",
+    priceValidUntil: `${new Date().getFullYear() + 1}-12-31`,
+    availability: "https://schema.org/InStock",
+    url: "/pricing",
+  },
+};
 
 export default async function PricingPage() {
   const session = await auth();
@@ -16,6 +48,10 @@ export default async function PricingPage() {
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}
+      />
       <Navbar />
       <main className="flex-1 px-6 py-20 sm:py-28">
         <div className="mx-auto max-w-md">

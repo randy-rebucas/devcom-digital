@@ -6,11 +6,13 @@ const fieldStyles =
 export function Field({
   label,
   hint,
+  error,
   htmlFor,
   children,
 }: {
   label: string;
   hint?: string;
+  error?: string;
   htmlFor: string;
   children: ReactNode;
 }) {
@@ -23,7 +25,11 @@ export function Field({
         {label}
       </label>
       {children}
-      {hint && <p className="mt-1.5 text-xs text-paper-dim">{hint}</p>}
+      {error ? (
+        <p className="mt-1.5 text-xs text-red-400">{error}</p>
+      ) : (
+        hint && <p className="mt-1.5 text-xs text-paper-dim">{hint}</p>
+      )}
     </div>
   );
 }

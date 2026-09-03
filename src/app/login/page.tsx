@@ -1,7 +1,15 @@
 import { Suspense } from "react";
+import type { Metadata } from "next";
 import Link from "next/link";
 import { Navbar } from "@/components/navbar";
 import { LoginForm } from "@/components/login-form";
+
+export const metadata: Metadata = {
+  title: "Log in",
+  description: "Log in to your Devcom Digital account to view your license key and tools.",
+  alternates: { canonical: "/login" },
+  robots: { index: false, follow: true },
+};
 
 export default function LoginPage() {
   return (

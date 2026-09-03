@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import ReactMarkdown from "react-markdown";
@@ -6,7 +7,22 @@ import { SubscriptionRequired } from "@/components/subscription-required";
 import { ToolStatusBadge } from "@/components/tool-status-badge";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { getEnabledToolBySlug } from "@/lib/tools";
+import { getEnabledToolBySlug, stripMarkdown } from "@/lib/tools";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const tool = await getEnabledToolBySlug(slug);
+  if (!tool) return {};
+
+  return {
+    title: tool.name,
+    description: stripMarkdown(tool.desc).slice(0, 160),
+  };
+}
 
 export default async function ToolDetailPage({
   params,

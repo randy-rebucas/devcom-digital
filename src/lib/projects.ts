@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import type { Project, ProjectStatus } from "@prisma/client";
 
+export { stripMarkdown } from "@/lib/markdown";
 export type { Project, ProjectStatus };
 
 export const PROJECT_STATUS_LABELS: Record<ProjectStatus, string> = {
@@ -30,13 +31,4 @@ export function getProjectBySlug(slug: string) {
 
 export function getEnabledProjectBySlug(slug: string) {
   return prisma.project.findFirst({ where: { slug, enabled: true } });
-}
-
-export function stripMarkdown(markdown: string): string {
-  return markdown
-    .replace(/!\[[^\]]*\]\([^)]*\)/g, "")
-    .replace(/\[([^\]]*)\]\([^)]*\)/g, "$1")
-    .replace(/[#*_`>~-]/g, "")
-    .replace(/\s+/g, " ")
-    .trim();
 }

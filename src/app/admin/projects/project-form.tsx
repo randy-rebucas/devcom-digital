@@ -1,4 +1,8 @@
+"use client";
+
+import { useActionState } from "react";
 import type { Project } from "@prisma/client";
+import type { ProjectFormState } from "./actions";
 import { Button } from "@/components/ui/button";
 import { Field, Input, Select, Textarea } from "@/components/ui/field";
 
@@ -13,12 +17,14 @@ export function ProjectForm({
   submitLabel,
 }: {
   project?: Project;
-  action: (formData: FormData) => void;
+  action: (prevState: ProjectFormState, formData: FormData) => Promise<ProjectFormState>;
   submitLabel: string;
 }) {
+  const [state, formAction, pending] = useActionState(action, undefined);
+
   return (
-    <form action={action} className="mt-8 space-y-5">
-      <Field label="Name" htmlFor="name">
+    <form action={formAction} className="mt-8 space-y-5">
+      <Field label="Name" htmlFor="name" error={state?.error}>
         <Input id="name" name="name" defaultValue={project?.name} required />
       </Field>
 
@@ -91,7 +97,9 @@ export function ProjectForm({
         </label>
       </div>
 
-      <Button type="submit">{submitLabel}</Button>
+      <Button type="submit" disabled={pending}>
+        {pending ? "Saving…" : submitLabel}
+      </Button>
     </form>
   );
 }

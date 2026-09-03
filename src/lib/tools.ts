@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import type { Tool, ToolStatus } from "@prisma/client";
 
+export { stripMarkdown } from "@/lib/markdown";
 export type { Tool, ToolStatus };
 
 export const TOOL_STATUS_LABELS: Record<ToolStatus, string> = {
@@ -30,13 +31,4 @@ export function getToolBySlug(slug: string) {
 
 export function getEnabledToolBySlug(slug: string) {
   return prisma.tool.findFirst({ where: { slug, enabled: true } });
-}
-
-export function stripMarkdown(markdown: string): string {
-  return markdown
-    .replace(/!\[[^\]]*\]\([^)]*\)/g, "")
-    .replace(/\[([^\]]*)\]\([^)]*\)/g, "$1")
-    .replace(/[#*_`>~-]/g, "")
-    .replace(/\s+/g, " ")
-    .trim();
 }

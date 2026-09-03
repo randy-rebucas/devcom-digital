@@ -21,7 +21,12 @@ function slugify(input: string) {
     .replace(/(^-|-$)/g, "");
 }
 
-export async function createTool(formData: FormData) {
+export type ToolFormState = { error?: string } | undefined;
+
+export async function createTool(
+  _prevState: ToolFormState,
+  formData: FormData,
+): Promise<ToolFormState> {
   await requireAdmin();
 
   const name = String(formData.get("name") ?? "").trim();
@@ -35,7 +40,9 @@ export async function createTool(formData: FormData) {
   const slugInput = String(formData.get("slug") ?? "").trim();
   const slug = slugify(slugInput || name);
 
-  if (!name || !desc || !slug) return;
+  if (!name || !desc || !slug) {
+    return { error: "Name and description are required." };
+  }
 
   const count = await prisma.tool.count();
 
@@ -59,7 +66,11 @@ export async function createTool(formData: FormData) {
   redirect("/admin/tools");
 }
 
-export async function updateTool(id: string, formData: FormData) {
+export async function updateTool(
+  id: string,
+  _prevState: ToolFormState,
+  formData: FormData,
+): Promise<ToolFormState> {
   await requireAdmin();
 
   const name = String(formData.get("name") ?? "").trim();
@@ -73,7 +84,9 @@ export async function updateTool(id: string, formData: FormData) {
   const slugInput = String(formData.get("slug") ?? "").trim();
   const slug = slugify(slugInput || name);
 
-  if (!name || !desc || !slug) return;
+  if (!name || !desc || !slug) {
+    return { error: "Name and description are required." };
+  }
 
   await prisma.tool.update({
     where: { id },

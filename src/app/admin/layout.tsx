@@ -1,7 +1,12 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { Navbar } from "@/components/navbar";
 import { auth } from "@/lib/auth";
 import { isAdmin } from "@/lib/permissions";
+
+export const metadata: Metadata = {
+  robots: { index: false, follow: false },
+};
 
 export default async function AdminLayout({
   children,

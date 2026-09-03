@@ -1,6 +1,14 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { Navbar } from "@/components/navbar";
 import { RegisterForm } from "@/components/register-form";
+
+export const metadata: Metadata = {
+  title: "Create an account",
+  description: "Create a Devcom Digital account, then subscribe to unlock the marketing tools suite.",
+  alternates: { canonical: "/register" },
+  robots: { index: false, follow: true },
+};
 
 export default function RegisterPage() {
   return (

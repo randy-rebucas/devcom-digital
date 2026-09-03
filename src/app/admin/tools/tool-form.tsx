@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useRef, useState } from "react";
 import type { Tool } from "@prisma/client";
 import type { ToolFormState } from "./actions";
 import { Button } from "@/components/ui/button";
@@ -21,6 +21,8 @@ export function ToolForm({
   submitLabel: string;
 }) {
   const [state, formAction, pending] = useActionState(action, undefined);
+  const [preview, setPreview] = useState<string | null>(null);
+  const previewRef = useRef<string | null>(null);
 
   return (
     <form action={formAction} className="mt-8 space-y-5">
@@ -32,13 +34,40 @@ export function ToolForm({
         <Input id="slug" name="slug" defaultValue={tool?.slug} placeholder="my-tool" />
       </Field>
 
-      <Field label="Feature image URL" htmlFor="imageUrl">
+      <Field label="Feature image URL" htmlFor="imageUrl" hint="Or upload an image below to override this.">
         <Input
           id="imageUrl"
           name="imageUrl"
           defaultValue={tool?.imageUrl ?? ""}
           placeholder="https://..."
         />
+      </Field>
+
+      <Field label="Upload feature image" htmlFor="imageFile" hint="PNG, JPEG, or WebP. Max 5MB.">
+        <div className="flex items-center gap-4">
+          {(preview ?? tool?.imageUrl) && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={preview ?? tool?.imageUrl ?? undefined}
+              alt="Feature image preview"
+              className="h-16 w-16 shrink-0 rounded-sm border border-hairline object-cover"
+            />
+          )}
+          <input
+            id="imageFile"
+            name="imageFile"
+            type="file"
+            accept="image/png,image/jpeg,image/webp"
+            onChange={(e) => {
+              if (previewRef.current) URL.revokeObjectURL(previewRef.current);
+              const file = e.target.files?.[0];
+              const nextPreview = file ? URL.createObjectURL(file) : null;
+              previewRef.current = nextPreview;
+              setPreview(nextPreview);
+            }}
+            className="block text-xs text-paper-dim file:mr-3 file:rounded-sm file:border file:border-hairline file:bg-ink file:px-3 file:py-1.5 file:text-xs file:font-semibold file:uppercase file:tracking-wide file:text-paper file:transition-colors hover:file:border-gold hover:file:text-gold-bright"
+          />
+        </div>
       </Field>
 
       <Field

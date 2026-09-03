@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { isAdmin } from "@/lib/permissions";
 import { prisma } from "@/lib/prisma";
+import { deleteFeatureImageIfBlob, uploadFeatureImage } from "@/lib/image-upload";
 import type { ToolStatus } from "@prisma/client";
 
 async function requireAdmin() {
@@ -34,7 +35,7 @@ export async function createTool(
   const status = String(formData.get("status") ?? "IN_DEVELOPMENT") as ToolStatus;
   const guideUrl = String(formData.get("guideUrl") ?? "").trim() || null;
   const downloadUrl = String(formData.get("downloadUrl") ?? "").trim() || null;
-  const imageUrl = String(formData.get("imageUrl") ?? "").trim() || null;
+  let imageUrl = String(formData.get("imageUrl") ?? "").trim() || null;
   const requiresLicenseKey = formData.get("requiresLicenseKey") === "on";
   const enabled = formData.get("enabled") === "on";
   const slugInput = String(formData.get("slug") ?? "").trim();
@@ -42,6 +43,13 @@ export async function createTool(
 
   if (!name || !desc || !slug) {
     return { error: "Name and description are required." };
+  }
+
+  const imageFile = formData.get("imageFile");
+  if (imageFile instanceof File && imageFile.size > 0) {
+    const result = await uploadFeatureImage(imageFile, "tools");
+    if ("error" in result) return { error: result.error };
+    imageUrl = result.url;
   }
 
   const count = await prisma.tool.count();
@@ -78,7 +86,7 @@ export async function updateTool(
   const status = String(formData.get("status") ?? "IN_DEVELOPMENT") as ToolStatus;
   const guideUrl = String(formData.get("guideUrl") ?? "").trim() || null;
   const downloadUrl = String(formData.get("downloadUrl") ?? "").trim() || null;
-  const imageUrl = String(formData.get("imageUrl") ?? "").trim() || null;
+  let imageUrl = String(formData.get("imageUrl") ?? "").trim() || null;
   const requiresLicenseKey = formData.get("requiresLicenseKey") === "on";
   const enabled = formData.get("enabled") === "on";
   const slugInput = String(formData.get("slug") ?? "").trim();
@@ -86,6 +94,15 @@ export async function updateTool(
 
   if (!name || !desc || !slug) {
     return { error: "Name and description are required." };
+  }
+
+  const imageFile = formData.get("imageFile");
+  if (imageFile instanceof File && imageFile.size > 0) {
+    const result = await uploadFeatureImage(imageFile, "tools");
+    if ("error" in result) return { error: result.error };
+    const existing = await prisma.tool.findUnique({ where: { id }, select: { imageUrl: true } });
+    await deleteFeatureImageIfBlob(existing?.imageUrl);
+    imageUrl = result.url;
   }
 
   await prisma.tool.update({

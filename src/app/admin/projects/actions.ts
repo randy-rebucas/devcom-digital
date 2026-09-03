@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { isAdmin } from "@/lib/permissions";
 import { prisma } from "@/lib/prisma";
+import { deleteFeatureImageIfBlob, uploadFeatureImage } from "@/lib/image-upload";
 import type { ProjectStatus } from "@prisma/client";
 
 async function requireAdmin() {
@@ -34,13 +35,20 @@ export async function createProject(
   const status = String(formData.get("status") ?? "IN_PROGRESS") as ProjectStatus;
   const liveUrl = String(formData.get("liveUrl") ?? "").trim() || null;
   const repoUrl = String(formData.get("repoUrl") ?? "").trim() || null;
-  const imageUrl = String(formData.get("imageUrl") ?? "").trim() || null;
+  let imageUrl = String(formData.get("imageUrl") ?? "").trim() || null;
   const enabled = formData.get("enabled") === "on";
   const slugInput = String(formData.get("slug") ?? "").trim();
   const slug = slugify(slugInput || name);
 
   if (!name || !desc || !slug) {
     return { error: "Name and description are required." };
+  }
+
+  const imageFile = formData.get("imageFile");
+  if (imageFile instanceof File && imageFile.size > 0) {
+    const result = await uploadFeatureImage(imageFile, "projects");
+    if ("error" in result) return { error: result.error };
+    imageUrl = result.url;
   }
 
   const count = await prisma.project.count();
@@ -77,13 +85,22 @@ export async function updateProject(
   const status = String(formData.get("status") ?? "IN_PROGRESS") as ProjectStatus;
   const liveUrl = String(formData.get("liveUrl") ?? "").trim() || null;
   const repoUrl = String(formData.get("repoUrl") ?? "").trim() || null;
-  const imageUrl = String(formData.get("imageUrl") ?? "").trim() || null;
+  let imageUrl = String(formData.get("imageUrl") ?? "").trim() || null;
   const enabled = formData.get("enabled") === "on";
   const slugInput = String(formData.get("slug") ?? "").trim();
   const slug = slugify(slugInput || name);
 
   if (!name || !desc || !slug) {
     return { error: "Name and description are required." };
+  }
+
+  const imageFile = formData.get("imageFile");
+  if (imageFile instanceof File && imageFile.size > 0) {
+    const result = await uploadFeatureImage(imageFile, "projects");
+    if ("error" in result) return { error: result.error };
+    const existing = await prisma.project.findUnique({ where: { id }, select: { imageUrl: true } });
+    await deleteFeatureImageIfBlob(existing?.imageUrl);
+    imageUrl = result.url;
   }
 
   await prisma.project.update({

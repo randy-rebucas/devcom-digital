@@ -1,36 +1,43 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Devcom Digital Marketing Services
 
-## Getting Started
+Marketing site + subscription-gated digital tools for **Devcom Digital Marketing Services**. Users register, subscribe via PayPal, and receive a unique license key that unlocks the tools dashboard for as long as their subscription is active.
 
-First, run the development server:
+## Stack
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- Next.js 16 (App Router)
+- NextAuth.js v5 (Credentials provider, JWT sessions)
+- Prisma 6 + PostgreSQL
+- PayPal Subscriptions (Checkout SDK + webhooks)
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## How it works
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. A visitor creates an account (`/register`).
+2. They subscribe on `/pricing` via the PayPal Subscribe button, which creates a PayPal subscription and redirects for approval.
+3. On approval, the client confirms the subscription with `/api/paypal/create-subscription`; PayPal webhooks (`/api/paypal/webhook`) are the source of truth for later lifecycle changes (cancellation, suspension, expiry).
+4. The moment a subscription becomes `ACTIVE`, a license key is generated (`src/lib/license.ts`) and stored against the user.
+5. `/dashboard` shows subscription status and the license key. `/tools` (and `/dashboard`) are gated: only users with an `ACTIVE` subscription and an active license can access them. Route access is additionally enforced in `src/proxy.ts`.
+6. If a subscription is cancelled/suspended/expired, the webhook revokes the license automatically.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Setup
 
-## Learn More
+1. **Database**: provision a Postgres database (e.g. [Neon](https://neon.tech) or [Supabase](https://supabase.com)) and set `DATABASE_URL`.
+2. Copy `.env.example` to `.env.local` and fill in the values:
+   - `AUTH_SECRET`: `openssl rand -base64 32`
+   - `PAYPAL_CLIENT_ID` / `PAYPAL_CLIENT_SECRET`: from the [PayPal Developer Dashboard](https://developer.paypal.com/dashboard/applications)
+   - `PAYPAL_PLAN_ID`: create a Product + a monthly billing Plan in the dashboard (or via the Subscriptions API) and paste its plan ID
+   - `PAYPAL_WEBHOOK_ID`: create a webhook pointed at `https://<your-domain>/api/paypal/webhook`, subscribed to `BILLING.SUBSCRIPTION.*` events
+   - `NEXT_PUBLIC_PAYPAL_CLIENT_ID`: same as `PAYPAL_CLIENT_ID` (exposed to the browser for the PayPal SDK)
+3. Run migrations:
+   ```bash
+   npx prisma migrate dev --name init
+   ```
+4. Start the dev server:
+   ```bash
+   npm run dev
+   ```
 
-To learn more about Next.js, take a look at the following resources:
+## Notes
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- The pricing page shows a config warning instead of the PayPal button if `PAYPAL_PLAN_ID` / `NEXT_PUBLIC_PAYPAL_CLIENT_ID` aren't set.
+- License keys are formatted `DEVCOM-XXXX-XXXX-XXXX-XXXX` and generated in `src/lib/license.ts`.
+- Digital tools listed on `/tools` are placeholders — swap in the real tools/links once built.

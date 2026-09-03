@@ -57,50 +57,6 @@ export default async function Home() {
           <div className="mx-auto max-w-6xl px-6 py-16 sm:py-20">
             <div className="flex items-baseline justify-between gap-4">
               <h2 className="font-display text-2xl font-bold tracking-tight text-paper sm:text-3xl">
-                The suite
-              </h2>
-              <span className="font-mono text-sm text-paper-dim tabular-nums">
-                {tools.length.toString().padStart(2, "0")} tool
-                {tools.length === 1 ? "" : "s"}
-              </span>
-            </div>
-
-            {tools.length === 0 ? (
-              <p className="mt-10 border-t border-hairline pt-8 text-paper-dim">
-                The suite is being assembled — check back soon.
-              </p>
-            ) : (
-              <ul className="mt-8 grid grid-cols-1 border-l border-t border-hairline sm:grid-cols-2">
-                {tools.map((tool, i) => (
-                  <li key={tool.slug} className="border-b border-r border-hairline">
-                    <Link
-                      href={`/tools/${tool.slug}`}
-                      className="group flex h-full flex-col gap-3 p-6 transition-colors hover:bg-ink-raised"
-                    >
-                      <div className="flex items-start justify-between gap-3">
-                        <span className="font-mono text-xs text-gold-dim">
-                          No. {(i + 1).toString().padStart(2, "0")}
-                        </span>
-                        <ToolStatusBadge status={tool.status} className="shrink-0" />
-                      </div>
-                      <h3 className="font-display text-xl font-bold tracking-tight text-paper group-hover:text-gold-bright">
-                        {tool.name}
-                      </h3>
-                      <p className="line-clamp-2 text-sm text-paper-dim">
-                        {stripMarkdown(tool.desc)}
-                      </p>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-        </section>
-
-        <section className="border-t border-hairline">
-          <div className="mx-auto max-w-6xl px-6 py-16 sm:py-20">
-            <div className="flex items-baseline justify-between gap-4">
-              <h2 className="font-display text-2xl font-bold tracking-tight text-paper sm:text-3xl">
                 Projects
               </h2>
               <span className="font-mono text-sm text-paper-dim tabular-nums">
@@ -152,6 +108,50 @@ export default async function Home() {
                           ))}
                         </ul>
                       )}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </section>
+
+        <section className="border-t border-hairline">
+          <div className="mx-auto max-w-6xl px-6 py-16 sm:py-20">
+            <div className="flex items-baseline justify-between gap-4">
+              <h2 className="font-display text-2xl font-bold tracking-tight text-paper sm:text-3xl">
+                The suite
+              </h2>
+              <span className="font-mono text-sm text-paper-dim tabular-nums">
+                {tools.length.toString().padStart(2, "0")} tool
+                {tools.length === 1 ? "" : "s"}
+              </span>
+            </div>
+
+            {tools.length === 0 ? (
+              <p className="mt-10 border-t border-hairline pt-8 text-paper-dim">
+                The suite is being assembled — check back soon.
+              </p>
+            ) : (
+              <ul className="mt-8 grid grid-cols-1 border-l border-t border-hairline sm:grid-cols-2">
+                {tools.map((tool, i) => (
+                  <li key={tool.slug} className="border-b border-r border-hairline">
+                    <Link
+                      href={`/tools/${tool.slug}`}
+                      className="group flex h-full flex-col gap-3 p-6 transition-colors hover:bg-ink-raised"
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <span className="font-mono text-xs text-gold-dim">
+                          No. {(i + 1).toString().padStart(2, "0")}
+                        </span>
+                        <ToolStatusBadge status={tool.status} className="shrink-0" />
+                      </div>
+                      <h3 className="font-display text-xl font-bold tracking-tight text-paper group-hover:text-gold-bright">
+                        {tool.name}
+                      </h3>
+                      <p className="line-clamp-2 text-sm text-paper-dim">
+                        {stripMarkdown(tool.desc)}
+                      </p>
                     </Link>
                   </li>
                 ))}

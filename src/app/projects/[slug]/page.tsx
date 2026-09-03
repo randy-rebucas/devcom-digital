@@ -81,6 +81,21 @@ export default async function ProjectDetailPage({
             </h1>
             <ProjectStatusBadge status={project.status} className="mt-1" />
           </div>
+          {project.tagline && (
+            <p className="mt-1 text-sm text-gold-dim">{project.tagline}</p>
+          )}
+          {project.tags.length > 0 && (
+            <ul className="mt-3 flex flex-wrap gap-1.5">
+              {project.tags.map((tag) => (
+                <li
+                  key={tag}
+                  className="rounded-sm border border-hairline px-1.5 py-0.5 text-[10px] text-paper-dim"
+                >
+                  {tag}
+                </li>
+              ))}
+            </ul>
+          )}
           <div className="mt-3 space-y-3 text-sm leading-relaxed text-paper-dim [&_a]:text-gold [&_a]:underline [&_code]:rounded-sm [&_code]:bg-ink [&_code]:px-1 [&_code]:py-0.5 [&_code]:font-mono [&_h1]:text-lg [&_h1]:font-semibold [&_h1]:text-paper [&_h2]:text-base [&_h2]:font-semibold [&_h2]:text-paper [&_li]:ml-4 [&_li]:list-disc [&_strong]:font-semibold [&_strong]:text-paper">
             <ReactMarkdown>{project.desc}</ReactMarkdown>
           </div>

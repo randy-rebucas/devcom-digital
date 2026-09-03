@@ -146,8 +146,11 @@ model Project {
   id        String        @id @default(cuid())
   slug      String        @unique
   name      String
+  tagline   String?
   desc      String        @db.Text
   imageUrl  String?
+  tags      String[]      @default([])
+  featured  Boolean       @default(false)
   status    ProjectStatus @default(IN_PROGRESS)
   liveUrl   String?
   repoUrl   String?

@@ -34,6 +34,15 @@ export function ProjectForm({
         <Input id="slug" name="slug" defaultValue={project?.slug} placeholder="my-project" />
       </Field>
 
+      <Field label="Tagline" htmlFor="tagline" hint="A short one-liner shown on project cards.">
+        <Input
+          id="tagline"
+          name="tagline"
+          defaultValue={project?.tagline ?? ""}
+          placeholder="A tool that does X for Y"
+        />
+      </Field>
+
       <Field label="Feature image URL" htmlFor="imageUrl" hint="Or upload an image below to override this.">
         <Input
           id="imageUrl"
@@ -85,6 +94,15 @@ export function ProjectForm({
         />
       </Field>
 
+      <Field label="Tech stack / tags" htmlFor="tags" hint="Comma-separated, e.g. Next.js, PostgreSQL, Stripe">
+        <Input
+          id="tags"
+          name="tags"
+          defaultValue={project?.tags?.join(", ") ?? ""}
+          placeholder="Next.js, PostgreSQL, Stripe"
+        />
+      </Field>
+
       <Field label="Status" htmlFor="status">
         <Select id="status" name="status" defaultValue={project?.status ?? "IN_PROGRESS"}>
           {STATUS_OPTIONS.map((opt) => (
@@ -123,6 +141,19 @@ export function ProjectForm({
         />
         <label htmlFor="enabled" className="text-sm text-paper-dim">
           Enabled (visible on the public site)
+        </label>
+      </div>
+
+      <div className="flex items-center gap-2">
+        <input
+          id="featured"
+          name="featured"
+          type="checkbox"
+          defaultChecked={project?.featured ?? false}
+          className="h-4 w-4 rounded-sm border-hairline bg-ink text-gold focus-visible:outline-2 focus-visible:outline-gold-bright"
+        />
+        <label htmlFor="featured" className="text-sm text-paper-dim">
+          Featured (highlighted at the top of the showcase)
         </label>
       </div>
 

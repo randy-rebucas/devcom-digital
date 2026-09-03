@@ -22,6 +22,13 @@ function slugify(input: string) {
     .replace(/(^-|-$)/g, "");
 }
 
+function parseTags(value: FormDataEntryValue | null) {
+  return String(value ?? "")
+    .split(",")
+    .map((tag) => tag.trim())
+    .filter(Boolean);
+}
+
 export type ProjectFormState = { error?: string } | undefined;
 
 export async function createProject(
@@ -31,12 +38,15 @@ export async function createProject(
   await requireAdmin();
 
   const name = String(formData.get("name") ?? "").trim();
+  const tagline = String(formData.get("tagline") ?? "").trim() || null;
   const desc = String(formData.get("desc") ?? "").trim();
   const status = String(formData.get("status") ?? "IN_PROGRESS") as ProjectStatus;
   const liveUrl = String(formData.get("liveUrl") ?? "").trim() || null;
   const repoUrl = String(formData.get("repoUrl") ?? "").trim() || null;
   let imageUrl = String(formData.get("imageUrl") ?? "").trim() || null;
+  const tags = parseTags(formData.get("tags"));
   const enabled = formData.get("enabled") === "on";
+  const featured = formData.get("featured") === "on";
   const slugInput = String(formData.get("slug") ?? "").trim();
   const slug = slugify(slugInput || name);
 
@@ -57,12 +67,15 @@ export async function createProject(
     data: {
       slug,
       name,
+      tagline,
       desc,
       status,
       liveUrl,
       repoUrl,
       imageUrl,
+      tags,
       enabled,
+      featured,
       order: count,
     },
   });
@@ -81,12 +94,15 @@ export async function updateProject(
   await requireAdmin();
 
   const name = String(formData.get("name") ?? "").trim();
+  const tagline = String(formData.get("tagline") ?? "").trim() || null;
   const desc = String(formData.get("desc") ?? "").trim();
   const status = String(formData.get("status") ?? "IN_PROGRESS") as ProjectStatus;
   const liveUrl = String(formData.get("liveUrl") ?? "").trim() || null;
   const repoUrl = String(formData.get("repoUrl") ?? "").trim() || null;
   let imageUrl = String(formData.get("imageUrl") ?? "").trim() || null;
+  const tags = parseTags(formData.get("tags"));
   const enabled = formData.get("enabled") === "on";
+  const featured = formData.get("featured") === "on";
   const slugInput = String(formData.get("slug") ?? "").trim();
   const slug = slugify(slugInput || name);
 
@@ -105,7 +121,7 @@ export async function updateProject(
 
   await prisma.project.update({
     where: { id },
-    data: { slug, name, desc, status, liveUrl, repoUrl, imageUrl, enabled },
+    data: { slug, name, tagline, desc, status, liveUrl, repoUrl, imageUrl, tags, enabled, featured },
   });
 
   revalidatePath("/admin/projects");

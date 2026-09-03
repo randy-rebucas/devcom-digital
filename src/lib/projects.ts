@@ -21,7 +21,7 @@ export function listProjects() {
 export function listEnabledProjects() {
   return prisma.project.findMany({
     where: { enabled: true },
-    orderBy: { order: "asc" },
+    orderBy: [{ featured: "desc" }, { order: "asc" }],
   });
 }
 

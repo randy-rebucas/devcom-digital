@@ -74,14 +74,33 @@ export default async function ProjectsPage() {
                       <span className="font-mono text-xs text-gold-dim">
                         No. {(i + 1).toString().padStart(2, "0")}
                       </span>
-                      <ProjectStatusBadge status={project.status} className="shrink-0" />
+                      <div className="flex shrink-0 items-center gap-2">
+                        {project.featured && (
+                          <span className="rounded-sm border border-gold/40 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-gold-bright">
+                            Featured
+                          </span>
+                        )}
+                        <ProjectStatusBadge status={project.status} />
+                      </div>
                     </div>
                     <h2 className="font-display text-xl font-bold tracking-tight text-paper group-hover:text-gold-bright">
                       {project.name}
                     </h2>
                     <p className="line-clamp-2 text-sm text-paper-dim">
-                      {stripMarkdown(project.desc)}
+                      {project.tagline || stripMarkdown(project.desc)}
                     </p>
+                    {project.tags.length > 0 && (
+                      <ul className="mt-auto flex flex-wrap gap-1.5 pt-1">
+                        {project.tags.map((tag) => (
+                          <li
+                            key={tag}
+                            className="rounded-sm border border-hairline px-1.5 py-0.5 text-[10px] text-paper-dim"
+                          >
+                            {tag}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
                   </Link>
                 </li>
               ))}

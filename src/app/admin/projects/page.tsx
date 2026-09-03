@@ -43,6 +43,11 @@ export default async function AdminProjectsPage() {
                     lit={project.enabled}
                     label={project.enabled ? "Enabled" : "Disabled"}
                   />
+                  {project.featured && (
+                    <span className="rounded-sm border border-gold/40 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-gold-bright">
+                      Featured
+                    </span>
+                  )}
                 </div>
                 <p className="truncate text-sm text-paper-dim">/projects/{project.slug}</p>
               </div>

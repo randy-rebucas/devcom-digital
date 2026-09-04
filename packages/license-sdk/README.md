@@ -1,0 +1,86 @@
+# @devcom/license-sdk
+
+Server-side client for verifying a Devcom Digital subscriber's license key from
+any tool in the suite (SEO/keyword research, social scheduler, campaign
+analytics, ad creative generator, or anything added later).
+
+It talks to `POST /api/license/verify` on the main Devcom Digital app — see
+[docs/license-sdk-plan.md](../../docs/license-sdk-plan.md) in the repo root
+for the full design and rollout plan.
+
+**Never use this from the browser.** The API key identifies your tool to
+Devcom's backend; keep it server-side (env var), and only call `verify()`
+from your own backend after receiving a license key from your user.
+
+## Install
+
+Not published to a registry yet — install directly from this repo/path
+(git dependency or local `file:` path), e.g.:
+
+```json
+{
+  "dependencies": {
+    "@devcom/license-sdk": "file:../devcom-digital/packages/license-sdk"
+  }
+}
+```
+
+## Get an API key
+
+In the Devcom Digital admin: **Tools -> (your tool) -> Edit -> License
+verification API key -> Generate new key**. Copy it immediately — it's
+shown once and stored elsewhere only as a hash.
+
+## Usage
+
+```ts
+import { DevcomLicense } from "@devcom/license-sdk";
+
+const license = new DevcomLicense({
+  apiKey: process.env.DEVCOM_TOOL_API_KEY!,
+  // baseUrl defaults to https://devcomdigital.com — override for local/staging.
+});
+
+const result = await license.verify(userSuppliedKey);
+
+if (!result.valid) {
+  // result.reason: "not_found" | "revoked" | "subscription_inactive"
+  //              | "network_error" | "unauthorized"
+  return res.status(403).json({ error: "Subscription required", reason: result.reason });
+}
+
+// result.userId is the Devcom user id the key belongs to.
+```
+
+### Options
+
+| Option        | Default                     | Notes                                                                 |
+| ------------- | ---------------------------- | ---------------------------------------------------------------------|
+| `apiKey`      | required                     | Per-tool key from the admin.                                         |
+| `baseUrl`     | `https://devcomdigital.com`  | Point at a local/staging deployment during development.              |
+| `cacheTtlMs`  | `600000` (10 min)            | How long a result is cached in memory per key. `0` disables caching. |
+| `onError`     | `"closed"`                   | On a network/server failure: `"closed"` = treat as invalid (safe default), `"open"` = treat as valid. Only use `"open"` if an outage on Devcom's side must never block your tool. |
+| `timeoutMs`   | `5000`                       | Verify request timeout.                                              |
+
+Results are cached **in-process, per key** — fine for a single server;
+in a multi-instance deployment each instance keeps its own cache, so a
+revoked license can take up to `cacheTtlMs` to be reflected on every
+instance.
+
+### Express middleware
+
+```ts
+import { requireLicense } from "@devcom/license-sdk/express";
+
+app.use("/api/protected", requireLicense(license));
+// reads the key from the `x-license-key` header by default; pass
+// `getLicenseKey` to read it from somewhere else (query param, body, etc.)
+```
+
+## Development
+
+```bash
+npm install
+npm run build      # compiles src/ -> dist/
+npm run typecheck
+```

@@ -127,6 +127,24 @@ model Tool {
   updatedAt          DateTime   @updatedAt
 
   downloads ToolDownload[]
+  apiKeys   ToolApiKey[]
+}
+
+/// API key issued to a tool so its (possibly external) backend can call
+/// POST /api/license/verify to check a subscriber's license key.
+model ToolApiKey {
+  id         String    @id @default(cuid())
+  toolId     String
+  tool       Tool      @relation(fields: [toolId], references: [id], onDelete: Cascade)
+  name       String?
+  keyHash    String    @unique
+  keyPrefix  String
+  active     Boolean   @default(true)
+  lastUsedAt DateTime?
+  createdAt  DateTime  @default(now())
+  revokedAt  DateTime?
+
+  @@index([toolId])
 }
 
 model ToolDownload {

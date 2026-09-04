@@ -1,8 +1,10 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
+import { listToolApiKeys } from "@/lib/tool-api-keys";
 import { updateTool } from "../actions";
 import { ToolForm } from "../tool-form";
+import { ApiKeysPanel } from "./api-keys-panel";
 
 export default async function EditToolPage({
   params,
@@ -11,7 +13,10 @@ export default async function EditToolPage({
 }) {
   const { id } = await params;
 
-  const tool = await prisma.tool.findUnique({ where: { id } });
+  const [tool, apiKeys] = await Promise.all([
+    prisma.tool.findUnique({ where: { id } }),
+    listToolApiKeys(id),
+  ]);
   if (!tool) notFound();
 
   const updateToolWithId = updateTool.bind(null, id);
@@ -25,6 +30,7 @@ export default async function EditToolPage({
         Edit tool
       </h1>
       <ToolForm tool={tool} action={updateToolWithId} submitLabel="Save changes" />
+      <ApiKeysPanel toolId={tool.id} keys={apiKeys} />
     </div>
   );
 }

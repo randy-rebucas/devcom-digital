@@ -6,6 +6,7 @@ import { auth } from "@/lib/auth";
 import { isAdmin } from "@/lib/permissions";
 import { prisma } from "@/lib/prisma";
 import { deleteFeatureImageIfBlob, uploadFeatureImage } from "@/lib/image-upload";
+import { createToolApiKey, revokeToolApiKey } from "@/lib/tool-api-keys";
 import type { ToolStatus } from "@prisma/client";
 
 async function requireAdmin() {
@@ -132,4 +133,18 @@ export async function toggleToolEnabled(id: string, enabled: boolean) {
   revalidatePath("/admin/tools");
   revalidatePath("/tools");
   revalidatePath(`/tools/${tool.slug}`);
+}
+
+export async function createToolApiKeyAction(toolId: string, name?: string) {
+  await requireAdmin();
+  const { rawKey } = await createToolApiKey(toolId, name);
+  revalidatePath(`/admin/tools/${toolId}`);
+  // Returned once to the admin UI so it can be shown to the user; never persisted in plaintext.
+  return rawKey;
+}
+
+export async function revokeToolApiKeyAction(toolId: string, keyId: string) {
+  await requireAdmin();
+  await revokeToolApiKey(keyId);
+  revalidatePath(`/admin/tools/${toolId}`);
 }

@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Standalone package with its own tooling/tsconfig, not part of the app build.
+    "packages/**",
   ]),
 ]);
 

@@ -46,3 +46,4 @@ yarn-error.log*
 next-env.d.ts
 
 examples/*/node_modules
+examples/*/.env.local

@@ -1,7 +1,12 @@
+import { config } from "dotenv";
 import express from "express";
 import cors from "cors";
 import { DevcomLicense } from "@devcomdigital/license-sdk";
 import { requireLicense } from "@devcomdigital/license-sdk/express";
+
+// Mirrors Vite's env file precedence: .env, then .env.local overrides it.
+config();
+config({ path: ".env.local", override: true });
 
 // Per-tool API key issued in the Devcom admin: Tools -> (your tool) -> Edit
 // -> License verification API key. Never expose this to the browser.

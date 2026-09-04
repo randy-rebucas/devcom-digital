@@ -1,7 +1,7 @@
 import { FormEvent, useState } from "react";
 
-const SERVER_URL = import.meta.env.VITE_SERVER_URL ?? "http://localhost:4000";
-const STORAGE_KEY = "devcom-license-key";
+const SERVER_URL = import.meta.env.VITE_SERVER_URL;
+const STORAGE_KEY = "";
 
 type Status =
   | { state: "idle" }

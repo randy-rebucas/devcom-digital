@@ -25,6 +25,13 @@ enum ToolStatus {
   AVAILABLE
 }
 
+enum ToolCategory {
+  SHOPIFY_THEMES
+  SHOPIFY_APPS
+  MARKETING
+  OTHER
+}
+
 enum ProjectStatus {
   IN_PROGRESS
   COMPLETED
@@ -111,20 +118,21 @@ model License {
 }
 
 model Tool {
-  id                 String     @id @default(cuid())
-  slug               String     @unique
+  id                 String       @id @default(cuid())
+  slug               String       @unique
   name               String
-  desc               String     @db.Text
+  desc               String       @db.Text
   imageUrl           String?
-  status             ToolStatus @default(IN_DEVELOPMENT)
+  status             ToolStatus   @default(IN_DEVELOPMENT)
+  category           ToolCategory @default(OTHER)
   guideUrl           String?
   downloadUrl        String?
-  downloadCount      Int        @default(0)
-  requiresLicenseKey Boolean    @default(false)
-  enabled            Boolean    @default(true)
-  order              Int        @default(0)
-  createdAt          DateTime   @default(now())
-  updatedAt          DateTime   @updatedAt
+  downloadCount      Int          @default(0)
+  requiresLicenseKey Boolean      @default(false)
+  enabled            Boolean      @default(true)
+  order              Int          @default(0)
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @updatedAt
 
   downloads ToolDownload[]
   apiKeys   ToolApiKey[]

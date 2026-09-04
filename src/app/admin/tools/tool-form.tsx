@@ -11,6 +11,13 @@ const STATUS_OPTIONS: { value: Tool["status"]; label: string }[] = [
   { value: "AVAILABLE", label: "Available" },
 ];
 
+const CATEGORY_OPTIONS: { value: Tool["category"]; label: string }[] = [
+  { value: "SHOPIFY_THEMES", label: "Shopify Themes" },
+  { value: "SHOPIFY_APPS", label: "Shopify Apps" },
+  { value: "MARKETING", label: "Marketing" },
+  { value: "OTHER", label: "Other" },
+];
+
 export function ToolForm({
   tool,
   action,
@@ -88,6 +95,16 @@ export function ToolForm({
       <Field label="Status" htmlFor="status">
         <Select id="status" name="status" defaultValue={tool?.status ?? "IN_DEVELOPMENT"}>
           {STATUS_OPTIONS.map((opt) => (
+            <option key={opt.value} value={opt.value}>
+              {opt.label}
+            </option>
+          ))}
+        </Select>
+      </Field>
+
+      <Field label="Category" htmlFor="category">
+        <Select id="category" name="category" defaultValue={tool?.category ?? "OTHER"}>
+          {CATEGORY_OPTIONS.map((opt) => (
             <option key={opt.value} value={opt.value}>
               {opt.label}
             </option>

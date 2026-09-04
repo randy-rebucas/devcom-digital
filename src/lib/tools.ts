@@ -1,8 +1,8 @@
 import { prisma } from "@/lib/prisma";
-import type { Tool, ToolStatus } from "@prisma/client";
+import type { Tool, ToolCategory, ToolStatus } from "@prisma/client";
 
 export { stripMarkdown } from "@/lib/markdown";
-export type { Tool, ToolStatus };
+export type { Tool, ToolCategory, ToolStatus };
 
 export const TOOL_STATUS_LABELS: Record<ToolStatus, string> = {
   IN_DEVELOPMENT: "In development",
@@ -13,6 +13,36 @@ export const TOOL_STATUS_LIT: Record<ToolStatus, boolean> = {
   IN_DEVELOPMENT: false,
   AVAILABLE: true,
 };
+
+export const TOOL_CATEGORY_LABELS: Record<ToolCategory, string> = {
+  SHOPIFY_THEMES: "Shopify Themes",
+  SHOPIFY_APPS: "Shopify Apps",
+  MARKETING: "Marketing",
+  OTHER: "Other",
+};
+
+export const TOOL_CATEGORY_ORDER: ToolCategory[] = [
+  "SHOPIFY_THEMES",
+  "SHOPIFY_APPS",
+  "MARKETING",
+  "OTHER",
+];
+
+export function groupToolsByCategory(tools: Tool[]) {
+  const groups = new Map<ToolCategory, Tool[]>();
+  for (const tool of tools) {
+    const bucket = groups.get(tool.category);
+    if (bucket) bucket.push(tool);
+    else groups.set(tool.category, [tool]);
+  }
+  return TOOL_CATEGORY_ORDER.filter((category) => groups.has(category)).map(
+    (category) => ({
+      category,
+      label: TOOL_CATEGORY_LABELS[category],
+      tools: groups.get(category)!,
+    }),
+  );
+}
 
 export function listTools() {
   return prisma.tool.findMany({ orderBy: { order: "asc" } });

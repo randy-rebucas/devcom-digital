@@ -7,7 +7,7 @@ import { isAdmin } from "@/lib/permissions";
 import { prisma } from "@/lib/prisma";
 import { deleteFeatureImageIfBlob, uploadFeatureImage } from "@/lib/image-upload";
 import { createToolApiKey, revokeToolApiKey } from "@/lib/tool-api-keys";
-import type { ToolStatus } from "@prisma/client";
+import type { ToolCategory, ToolStatus } from "@prisma/client";
 
 async function requireAdmin() {
   const session = await auth();
@@ -34,6 +34,7 @@ export async function createTool(
   const name = String(formData.get("name") ?? "").trim();
   const desc = String(formData.get("desc") ?? "").trim();
   const status = String(formData.get("status") ?? "IN_DEVELOPMENT") as ToolStatus;
+  const category = String(formData.get("category") ?? "OTHER") as ToolCategory;
   const guideUrl = String(formData.get("guideUrl") ?? "").trim() || null;
   const downloadUrl = String(formData.get("downloadUrl") ?? "").trim() || null;
   let imageUrl = String(formData.get("imageUrl") ?? "").trim() || null;
@@ -61,6 +62,7 @@ export async function createTool(
       name,
       desc,
       status,
+      category,
       guideUrl,
       downloadUrl,
       imageUrl,
@@ -85,6 +87,7 @@ export async function updateTool(
   const name = String(formData.get("name") ?? "").trim();
   const desc = String(formData.get("desc") ?? "").trim();
   const status = String(formData.get("status") ?? "IN_DEVELOPMENT") as ToolStatus;
+  const category = String(formData.get("category") ?? "OTHER") as ToolCategory;
   const guideUrl = String(formData.get("guideUrl") ?? "").trim() || null;
   const downloadUrl = String(formData.get("downloadUrl") ?? "").trim() || null;
   let imageUrl = String(formData.get("imageUrl") ?? "").trim() || null;
@@ -108,7 +111,7 @@ export async function updateTool(
 
   await prisma.tool.update({
     where: { id },
-    data: { slug, name, desc, status, guideUrl, downloadUrl, imageUrl, requiresLicenseKey, enabled },
+    data: { slug, name, desc, status, category, guideUrl, downloadUrl, imageUrl, requiresLicenseKey, enabled },
   });
 
   revalidatePath("/admin/tools");

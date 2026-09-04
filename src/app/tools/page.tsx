@@ -5,7 +5,7 @@ import { SubscriptionRequired } from "@/components/subscription-required";
 import { ToolStatusBadge } from "@/components/tool-status-badge";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { listEnabledTools, stripMarkdown } from "@/lib/tools";
+import { groupToolsByCategory, listEnabledTools, stripMarkdown } from "@/lib/tools";
 
 export default async function ToolsPage() {
   const session = await auth();
@@ -44,38 +44,47 @@ export default async function ToolsPage() {
               No tools are available yet. Check back soon.
             </p>
           ) : (
-            <ul className="mt-8 grid grid-cols-1 border-l border-t border-hairline sm:grid-cols-2">
-              {tools.map((tool, i) => (
-                <li key={tool.slug} className="border-b border-r border-hairline">
-                  <Link
-                    href={`/tools/${tool.slug}`}
-                    className="group flex h-full flex-col gap-3 p-6 transition-colors hover:bg-ink-raised"
-                  >
-                    {tool.imageUrl && (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        src={tool.imageUrl}
-                        alt=""
-                        loading="lazy"
-                        className="-mt-6 -mx-6 mb-1 h-32 w-[calc(100%+3rem)] border-b border-hairline bg-ink object-cover"
-                      />
-                    )}
-                    <div className="flex items-start justify-between gap-3">
-                      <span className="font-mono text-xs text-gold-dim">
-                        No. {(i + 1).toString().padStart(2, "0")}
-                      </span>
-                      <ToolStatusBadge status={tool.status} className="shrink-0" />
-                    </div>
-                    <h2 className="font-display text-xl font-bold tracking-tight text-paper group-hover:text-gold-bright">
-                      {tool.name}
-                    </h2>
-                    <p className="line-clamp-2 text-sm text-paper-dim">
-                      {stripMarkdown(tool.desc)}
-                    </p>
-                  </Link>
-                </li>
+            <div className="mt-8 space-y-12">
+              {groupToolsByCategory(tools).map(({ category, label, tools: groupTools }) => (
+                <section key={category}>
+                  <h2 className="font-display text-lg font-bold tracking-tight text-paper">
+                    {label}
+                  </h2>
+                  <ul className="mt-4 grid grid-cols-1 border-l border-t border-hairline sm:grid-cols-2">
+                    {groupTools.map((tool, i) => (
+                      <li key={tool.slug} className="border-b border-r border-hairline">
+                        <Link
+                          href={`/tools/${tool.slug}`}
+                          className="group flex h-full flex-col gap-3 p-6 transition-colors hover:bg-ink-raised"
+                        >
+                          {tool.imageUrl && (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img
+                              src={tool.imageUrl}
+                              alt=""
+                              loading="lazy"
+                              className="-mt-6 -mx-6 mb-1 h-32 w-[calc(100%+3rem)] border-b border-hairline bg-ink object-cover"
+                            />
+                          )}
+                          <div className="flex items-start justify-between gap-3">
+                            <span className="font-mono text-xs text-gold-dim">
+                              No. {(i + 1).toString().padStart(2, "0")}
+                            </span>
+                            <ToolStatusBadge status={tool.status} className="shrink-0" />
+                          </div>
+                          <h3 className="font-display text-xl font-bold tracking-tight text-paper group-hover:text-gold-bright">
+                            {tool.name}
+                          </h3>
+                          <p className="line-clamp-2 text-sm text-paper-dim">
+                            {stripMarkdown(tool.desc)}
+                          </p>
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </section>
               ))}
-            </ul>
+            </div>
           )}
         </div>
       </main>

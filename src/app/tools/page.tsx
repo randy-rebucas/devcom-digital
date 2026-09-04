@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { Navbar } from "@/components/navbar";
@@ -6,6 +7,19 @@ import { ToolStatusBadge } from "@/components/tool-status-badge";
 import { auth } from "@/lib/auth";
 import { getUserEntitlements } from "@/lib/entitlements";
 import { groupToolsByCategory, listEnabledTools, stripMarkdown } from "@/lib/tools";
+
+const DESCRIPTION = "SEO, social scheduling, campaign analytics, and ad creative tools included with your subscription.";
+
+export const metadata: Metadata = {
+  title: "Tools",
+  description: DESCRIPTION,
+  alternates: { canonical: "/tools" },
+  openGraph: {
+    url: "/tools",
+    title: "Tools | Devcom Digital",
+    description: DESCRIPTION,
+  },
+};
 
 export default async function ToolsPage() {
   const session = await auth();

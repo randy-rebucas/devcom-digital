@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Syne, Plus_Jakarta_Sans, Space_Mono } from "next/font/google";
 import { Footer } from "@/components/footer";
 import { GoogleAnalytics } from "@/components/google-analytics";
+import { WebVitals } from "@/components/web-vitals";
 import { SITE_NAME, SITE_DESCRIPTION, SITE_URL } from "@/lib/seo";
 import "./globals.css";
 
@@ -100,7 +101,12 @@ export default function RootLayout({ children, modal }: LayoutProps<"/">) {
       className={`${syne.variable} ${jakarta.variable} ${spaceMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-ink text-paper">
-        {GA_MEASUREMENT_ID && <GoogleAnalytics measurementId={GA_MEASUREMENT_ID} />}
+        {GA_MEASUREMENT_ID && (
+          <>
+            <GoogleAnalytics measurementId={GA_MEASUREMENT_ID} />
+            <WebVitals />
+          </>
+        )}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}

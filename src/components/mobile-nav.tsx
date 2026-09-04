@@ -82,6 +82,7 @@ export function MobileNav({
               </>
             ) : (
               <>
+                <MobileLink href="/tools">Tools</MobileLink>
                 <MobileLink href="/projects">Projects</MobileLink>
                 <MobileLink href="/pricing">Pricing</MobileLink>
                 <MobileLink href="/login">Log in</MobileLink>

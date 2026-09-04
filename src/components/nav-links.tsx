@@ -4,6 +4,9 @@ import Link from "next/link";
 export function PublicNavLinks() {
   return (
     <>
+      <Link href="/tools" className="text-paper-dim transition-colors hover:text-gold-bright">
+        Tools
+      </Link>
       <Link href="/projects" className="text-paper-dim transition-colors hover:text-gold-bright">
         Projects
       </Link>

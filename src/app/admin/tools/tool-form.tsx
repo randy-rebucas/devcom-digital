@@ -197,6 +197,21 @@ export function ToolForm({
         />
       </Field>
 
+      <Field
+        label="Monthly usage quota"
+        htmlFor="usageQuota"
+        hint="Max AI/API calls per subscriber per billing period. Leave blank for unlimited."
+      >
+        <Input
+          id="usageQuota"
+          name="usageQuota"
+          type="number"
+          min={0}
+          defaultValue={tool?.usageQuota ?? ""}
+          placeholder="e.g. 50"
+        />
+      </Field>
+
       <div className="flex items-center gap-2">
         <input
           id="requiresLicenseKey"

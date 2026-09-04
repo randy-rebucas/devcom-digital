@@ -50,6 +50,51 @@ export async function getSubscriptionDetails(subscriptionId: string) {
   return res.json();
 }
 
+export async function createOrder(params: {
+  amountCents: number;
+  currency: string;
+  referenceId: string;
+}) {
+  const res = await paypalFetch("/v2/checkout/orders", {
+    method: "POST",
+    body: JSON.stringify({
+      intent: "CAPTURE",
+      purchase_units: [
+        {
+          reference_id: params.referenceId,
+          amount: {
+            currency_code: params.currency,
+            value: (params.amountCents / 100).toFixed(2),
+          },
+        },
+      ],
+    }),
+  });
+
+  if (!res.ok) {
+    throw new Error(`Failed to create PayPal order: ${res.status} ${await res.text()}`);
+  }
+  return res.json();
+}
+
+export async function captureOrder(orderId: string) {
+  const res = await paypalFetch(`/v2/checkout/orders/${orderId}/capture`, {
+    method: "POST",
+  });
+  if (!res.ok) {
+    throw new Error(`Failed to capture PayPal order: ${res.status} ${await res.text()}`);
+  }
+  return res.json();
+}
+
+export async function getOrderDetails(orderId: string) {
+  const res = await paypalFetch(`/v2/checkout/orders/${orderId}`);
+  if (!res.ok) {
+    throw new Error(`Failed to fetch PayPal order: ${res.status} ${await res.text()}`);
+  }
+  return res.json();
+}
+
 export async function verifyWebhookSignature(params: {
   transmissionId: string;
   transmissionTime: string;

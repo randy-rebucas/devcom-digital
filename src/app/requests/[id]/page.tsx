@@ -7,6 +7,8 @@ import { prisma } from "@/lib/prisma";
 import { MAX_REGENERATIONS } from "@/lib/ai/rate-limit";
 import { DecisionButtons } from "./decision-buttons";
 import { RegenerateForm } from "./regenerate-form";
+import { CommentThread } from "./comment-thread";
+import { ProtectedText } from "@/components/ui/protected-text";
 
 const STATUS_LABELS = {
   PENDING: "Generating quote…",
@@ -37,6 +39,10 @@ export default async function RequestDetailPage({
 
   const request = await prisma.quoteRequest.findFirst({
     where: { id, userId: session.user.id },
+    include: {
+      comments: { orderBy: { createdAt: "asc" }, include: { author: { select: { name: true } } } },
+      deliverables: { orderBy: { createdAt: "desc" } },
+    },
   });
   if (!request) notFound();
 
@@ -119,9 +125,9 @@ export default async function RequestDetailPage({
                     Timeline &amp; price
                   </h2>
                   <p className="mt-3 text-sm text-paper">{request.quoteTimeline}</p>
-                  <p className="mt-1 font-display text-lg font-bold text-gold-bright">
+                  <ProtectedText className="mt-1 block font-display text-lg font-bold text-gold-bright">
                     {request.quoteEstimate}
-                  </p>
+                  </ProtectedText>
                 </section>
 
                 <section className="border-b border-hairline py-6">
@@ -150,6 +156,30 @@ export default async function RequestDetailPage({
                 )}
               </>
             )}
+
+            {request.deliverables.length > 0 && (
+              <section className="border-b border-hairline py-6">
+                <h2 className="text-xs font-semibold uppercase tracking-wide text-paper-dim">
+                  Deliverables
+                </h2>
+                <ul className="mt-3 space-y-2">
+                  {request.deliverables.map((file) => (
+                    <li key={file.id}>
+                      <a
+                        href={file.fileUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm text-gold underline"
+                      >
+                        {file.name}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            )}
+
+            <CommentThread id={request.id} comments={request.comments} />
           </div>
         </div>
       </main>

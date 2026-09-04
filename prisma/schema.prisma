@@ -51,6 +51,28 @@ enum QuoteRequestKind {
   CUSTOM
 }
 
+enum CommentAuthorType {
+  MEMBER
+  ADMIN
+  SYSTEM
+}
+
+enum PipelineStage {
+  NEW
+  QUOTED
+  NEGOTIATING
+  WON
+  LOST
+}
+
+enum InvoiceStatus {
+  DRAFT
+  SENT
+  PARTIALLY_PAID
+  PAID
+  CANCELLED
+}
+
 model User {
   id            String    @id @default(cuid())
   name          String?
@@ -66,12 +88,16 @@ model User {
   lastLoginAt      DateTime?
   lastLoginIp      String?
 
-  accounts      Account[]
-  sessions      Session[]
-  subscription  Subscription?
-  license       License?
-  toolDownloads ToolDownload[]
-  quoteRequests QuoteRequest[]
+  accounts             Account[]
+  sessions             Session[]
+  subscription         Subscription?
+  license              License?
+  toolDownloads        ToolDownload[]
+  quoteRequests        QuoteRequest[]
+  comments             Comment[]
+  notes                Note[]
+  deliverablesUploaded Deliverable[]
+  toolUsages           ToolUsage[]
 }
 
 model Account {
@@ -151,12 +177,14 @@ model Tool {
   requiresLicenseKey Boolean      @default(false)
   enabled            Boolean      @default(true)
   order              Int          @default(0)
+  usageQuota         Int?
   createdAt          DateTime     @default(now())
   updatedAt          DateTime     @updatedAt
 
   downloads     ToolDownload[]
   apiKeys       ToolApiKey[]
   quoteRequests QuoteRequest[]
+  usages        ToolUsage[]
 }
 
 /// API key issued to a tool so its (possibly external) backend can call
@@ -217,28 +245,106 @@ model QuoteRequest {
 
   kind      QuoteRequestKind
   toolId    String?
-  tool      Tool?             @relation(fields: [toolId], references: [id], onDelete: SetNull)
+  tool      Tool?            @relation(fields: [toolId], references: [id], onDelete: SetNull)
   projectId String?
-  project   Project?          @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  project   Project?         @relation(fields: [projectId], references: [id], onDelete: SetNull)
 
   title       String
   description String @db.Text
 
   status QuoteRequestStatus @default(PENDING)
 
-  quoteSummary  String?   @db.Text
-  quoteScope    Json?
-  quoteTimeline String?   @db.Text
-  quoteEstimate String?
-  quoteRaw      String?   @db.Text
-  quotedAt      DateTime?
-  regenerationCount Int   @default(0)
+  quoteSummary      String?   @db.Text
+  quoteScope        Json?
+  quoteTimeline     String?   @db.Text
+  quoteEstimate     String?
+  quoteRaw          String?   @db.Text
+  quotedAt          DateTime?
+  regenerationCount Int       @default(0)
 
   errorMessage String? @db.Text
+
+  pipelineStage PipelineStage @default(NEW)
+  followUpAt    DateTime?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  comments     Comment[]
+  notes        Note[]
+  deliverables Deliverable[]
+  invoice      Invoice?
+
   @@index([userId])
   @@index([status])
+  @@index([pipelineStage])
+}
+
+model Comment {
+  id             String            @id @default(cuid())
+  quoteRequestId String
+  quoteRequest   QuoteRequest      @relation(fields: [quoteRequestId], references: [id], onDelete: Cascade)
+  authorId       String?
+  author         User?             @relation(fields: [authorId], references: [id], onDelete: SetNull)
+  authorType     CommentAuthorType
+  body           String            @db.Text
+  attachmentUrl  String?
+  createdAt      DateTime          @default(now())
+
+  @@index([quoteRequestId])
+}
+
+model Note {
+  id             String       @id @default(cuid())
+  quoteRequestId String
+  quoteRequest   QuoteRequest @relation(fields: [quoteRequestId], references: [id], onDelete: Cascade)
+  authorId       String
+  author         User         @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  body           String       @db.Text
+  createdAt      DateTime     @default(now())
+
+  @@index([quoteRequestId])
+}
+
+model Invoice {
+  id             String        @id @default(cuid())
+  quoteRequestId String        @unique
+  quoteRequest   QuoteRequest  @relation(fields: [quoteRequestId], references: [id], onDelete: Cascade)
+  paypalOrderId  String?       @unique
+  totalAmount    Int
+  depositAmount  Int?
+  depositPaid    Boolean       @default(false)
+  balancePaid    Boolean       @default(false)
+  currency       String        @default("USD")
+  status         InvoiceStatus @default(DRAFT)
+  paidAt         DateTime?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+}
+
+model Deliverable {
+  id             String       @id @default(cuid())
+  quoteRequestId String
+  quoteRequest   QuoteRequest @relation(fields: [quoteRequestId], references: [id], onDelete: Cascade)
+  name           String
+  fileUrl        String
+  fileSize       Int?
+  uploadedById   String
+  uploadedBy     User         @relation(fields: [uploadedById], references: [id], onDelete: Cascade)
+  createdAt      DateTime     @default(now())
+
+  @@index([quoteRequestId])
+}
+
+model ToolUsage {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  toolId      String
+  tool        Tool     @relation(fields: [toolId], references: [id], onDelete: Cascade)
+  periodStart DateTime
+  count       Int      @default(0)
+  updatedAt   DateTime @updatedAt
+
+  @@unique([userId, toolId, periodStart])
 }

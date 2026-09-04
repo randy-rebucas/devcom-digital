@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { StatusIndicator } from "@/components/ui/status-indicator";
 import { prisma } from "@/lib/prisma";
 
@@ -40,12 +41,16 @@ export default async function AdminRequestsPage() {
         <ul className="mt-8 border-t border-hairline">
           {requests.map((request) => (
             <li key={request.id} className="border-b border-hairline py-4">
-              <div className="flex items-center justify-between gap-4">
+              <Link
+                href={`/admin/requests/${request.id}`}
+                className="flex items-center justify-between gap-4"
+              >
                 <div className="min-w-0">
                   <h2 className="truncate font-medium text-paper">{request.title}</h2>
                   <p className="mt-1 text-sm text-paper-dim">
                     {request.user.name ?? request.user.email} &middot;{" "}
-                    <span className="uppercase tracking-wide">{request.kind}</span>
+                    <span className="uppercase tracking-wide">{request.kind}</span> &middot;{" "}
+                    <span className="uppercase tracking-wide text-gold-dim">{request.pipelineStage}</span>
                   </p>
                 </div>
                 <div className="flex shrink-0 items-center gap-4 text-sm">
@@ -54,7 +59,7 @@ export default async function AdminRequestsPage() {
                     label={STATUS_LABELS[request.status]}
                   />
                 </div>
-              </div>
+              </Link>
             </li>
           ))}
         </ul>

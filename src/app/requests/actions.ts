@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { generateQuotation } from "@/lib/ai/quote";
+import { sendQuoteReadyEmail } from "@/lib/mail";
 import {
   checkCreateRateLimit,
   checkRegenerateRateLimit,
@@ -82,6 +83,7 @@ export async function createQuoteRequest(
       where: { id: created.id },
       data: {
         status: "QUOTED",
+        pipelineStage: "QUOTED",
         quoteSummary: result.summary,
         quoteScope: result.scope,
         quoteTimeline: result.timeline,
@@ -90,6 +92,11 @@ export async function createQuoteRequest(
         quotedAt: new Date(),
       },
     });
+    try {
+      await sendQuoteReadyEmail(session.user.email!, session.user.name ?? "there", created.id, title);
+    } catch (err) {
+      console.error("Failed to send quote ready email", err);
+    }
   } else {
     await prisma.quoteRequest.update({
       where: { id: created.id },
@@ -148,6 +155,7 @@ export async function regenerateQuote(
       data: {
         description,
         status: "QUOTED",
+        pipelineStage: "QUOTED",
         quoteSummary: result.summary,
         quoteScope: result.scope,
         quoteTimeline: result.timeline,
@@ -158,6 +166,11 @@ export async function regenerateQuote(
         regenerationCount: { increment: 1 },
       },
     });
+    try {
+      await sendQuoteReadyEmail(session.user.email!, session.user.name ?? "there", id, request.title);
+    } catch (err) {
+      console.error("Failed to send quote ready email", err);
+    }
   } else {
     await prisma.quoteRequest.update({
       where: { id },
@@ -186,7 +199,10 @@ export async function decideQuoteRequest(id: string, decision: "ACCEPTED" | "DEC
 
   await prisma.quoteRequest.update({
     where: { id },
-    data: { status: decision },
+    data: {
+      status: decision,
+      ...(decision === "ACCEPTED" ? { pipelineStage: "NEGOTIATING" as const } : {}),
+    },
   });
 
   revalidatePath(`/requests/${id}`);

@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { verifyWebhookSignature } from "@/lib/paypal";
 import { issueLicenseForUser, revokeLicenseForUser } from "@/lib/license";
-import { sendSubscriptionReceiptEmail } from "@/lib/mail";
+import { sendSubscriptionReceiptEmail, sendPaymentReceivedEmail } from "@/lib/mail";
 
 const ACTIVE_EVENTS = new Set([
   "BILLING.SUBSCRIPTION.ACTIVATED",
@@ -51,6 +51,11 @@ export async function POST(req: Request) {
 
   const eventType = event.event_type as string;
   const resource = event.resource ?? {};
+
+  if (eventType === "PAYMENT.CAPTURE.COMPLETED") {
+    return handlePaymentCaptured(resource);
+  }
+
   const paypalSubscriptionId = resource.id as string | undefined;
 
   if (!paypalSubscriptionId) {
@@ -91,6 +96,47 @@ export async function POST(req: Request) {
       data: { status: INACTIVE_EVENTS[eventType] },
     });
     await revokeLicenseForUser(subscription.userId);
+  }
+
+  return NextResponse.json({ ok: true });
+}
+
+async function handlePaymentCaptured(resource: Record<string, unknown>) {
+  const orderId = (resource?.supplementary_data as Record<string, unknown> | undefined)
+    ?.related_ids as Record<string, unknown> | undefined;
+  const paypalOrderId = orderId?.order_id as string | undefined;
+
+  if (!paypalOrderId) {
+    return NextResponse.json({ ok: true });
+  }
+
+  const invoice = await prisma.invoice.findUnique({
+    where: { paypalOrderId },
+    include: { quoteRequest: { include: { user: { select: { email: true, name: true } } } } },
+  });
+  if (!invoice) {
+    return NextResponse.json({ ok: true });
+  }
+
+  const isDepositOnly = Boolean(invoice.depositAmount) && !invoice.depositPaid;
+
+  await prisma.invoice.update({
+    where: { id: invoice.id },
+    data: isDepositOnly
+      ? { depositPaid: true, status: "PARTIALLY_PAID" }
+      : { balancePaid: true, status: "PAID", paidAt: new Date() },
+  });
+
+  const paidAmount = isDepositOnly ? invoice.depositAmount! : invoice.totalAmount - (invoice.depositAmount ?? 0);
+
+  try {
+    await sendPaymentReceivedEmail(
+      invoice.quoteRequest.user.email,
+      invoice.quoteRequest.user.name ?? "there",
+      `$${(paidAmount / 100).toFixed(2)}`,
+    );
+  } catch (err) {
+    console.error("Failed to send payment received email", err);
   }
 
   return NextResponse.json({ ok: true });

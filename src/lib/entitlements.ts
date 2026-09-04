@@ -15,3 +15,12 @@ export const getUserEntitlements = cache(async (userId: string | undefined) => {
 
   return { subscription, license, isActive };
 });
+
+// A subscriber's active status grants access to every AVAILABLE tool;
+// IN_DEVELOPMENT tools stay locked even for active subscribers.
+export function hasToolAccess(
+  isActive: boolean,
+  tool: { enabled: boolean; status: "IN_DEVELOPMENT" | "AVAILABLE" },
+) {
+  return isActive && tool.enabled && tool.status === "AVAILABLE";
+}

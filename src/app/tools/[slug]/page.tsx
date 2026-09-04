@@ -8,7 +8,7 @@ import { ButtonLink } from "@/components/ui/button";
 import { ToolDownloadLink } from "@/components/tool-download-link";
 import { ToolStatusBadge } from "@/components/tool-status-badge";
 import { auth } from "@/lib/auth";
-import { getUserEntitlements } from "@/lib/entitlements";
+import { getUserEntitlements, hasToolAccess } from "@/lib/entitlements";
 import { getEnabledToolBySlug, stripMarkdown } from "@/lib/tools";
 
 export async function generateMetadata({
@@ -36,7 +36,8 @@ export default async function ToolDetailPage({
   if (!tool) notFound();
 
   const session = await auth();
-  const { isActive } = await getUserEntitlements(session?.user?.id);
+  const { isActive: subscriptionActive } = await getUserEntitlements(session?.user?.id);
+  const isActive = hasToolAccess(subscriptionActive, tool);
 
   return (
     <>
@@ -129,16 +130,20 @@ export default async function ToolDetailPage({
                 {!isActive ? (
                   <div className="mt-3 flex flex-wrap items-center gap-3">
                     <p className="text-sm text-paper-dim">
-                      {session?.user?.id
-                        ? "Subscribe to download this tool."
-                        : "Log in and subscribe to download this tool."}
+                      {tool.status !== "AVAILABLE"
+                        ? "This tool isn't released yet."
+                        : session?.user?.id
+                          ? "Subscribe to download this tool."
+                          : "Log in and subscribe to download this tool."}
                     </p>
-                    <ButtonLink
-                      href={session?.user?.id ? "/pricing" : "/login"}
-                      size="sm"
-                    >
-                      {session?.user?.id ? "Subscribe" : "Log in"}
-                    </ButtonLink>
+                    {tool.status === "AVAILABLE" && (
+                      <ButtonLink
+                        href={session?.user?.id ? "/pricing" : "/login"}
+                        size="sm"
+                      >
+                        {session?.user?.id ? "Subscribe" : "Log in"}
+                      </ButtonLink>
+                    )}
                   </div>
                 ) : (
                   <ToolDownloadLink slug={tool.slug} />

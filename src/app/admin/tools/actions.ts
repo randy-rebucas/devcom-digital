@@ -95,9 +95,14 @@ export async function createTool(
   const featured = formData.get("featured") === "on";
   const slugInput = String(formData.get("slug") ?? "").trim();
   const slug = slugify(slugInput || name);
+  const usageQuotaInput = String(formData.get("usageQuota") ?? "").trim();
+  const usageQuota = usageQuotaInput ? Number(usageQuotaInput) : null;
 
   if (!name || !desc || !slug) {
     return { error: "Name and description are required." };
+  }
+  if (usageQuotaInput && (!Number.isInteger(usageQuota) || usageQuota! < 0)) {
+    return { error: "Usage quota must be a non-negative whole number." };
   }
 
   const imageFile = formData.get("imageFile");
@@ -133,6 +138,7 @@ export async function createTool(
       requiresLicenseKey,
       enabled,
       featured,
+      usageQuota,
       order: count,
     },
   });
@@ -164,9 +170,14 @@ export async function updateTool(
   const featured = formData.get("featured") === "on";
   const slugInput = String(formData.get("slug") ?? "").trim();
   const slug = slugify(slugInput || name);
+  const usageQuotaInput = String(formData.get("usageQuota") ?? "").trim();
+  const usageQuota = usageQuotaInput ? Number(usageQuotaInput) : null;
 
   if (!name || !desc || !slug) {
     return { error: "Name and description are required." };
+  }
+  if (usageQuotaInput && (!Number.isInteger(usageQuota) || usageQuota! < 0)) {
+    return { error: "Usage quota must be a non-negative whole number." };
   }
 
   const imageFile = formData.get("imageFile");
@@ -203,6 +214,7 @@ export async function updateTool(
       requiresLicenseKey,
       enabled,
       featured,
+      usageQuota,
     },
   });
 

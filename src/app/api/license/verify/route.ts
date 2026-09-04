@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { findToolByApiKey } from "@/lib/tool-api-keys";
 import { verifyLicenseKey } from "@/lib/license-verify";
+import { checkAndIncrementUsage } from "@/lib/tool-usage";
 
 /**
  * Server-to-server endpoint for external tools to verify a subscriber's
@@ -31,5 +32,10 @@ export async function POST(req: Request) {
   }
 
   const result = await verifyLicenseKey(key.trim());
-  return NextResponse.json(result);
+  if (!result.valid) {
+    return NextResponse.json(result);
+  }
+
+  const usage = await checkAndIncrementUsage(result.userId, tool.id);
+  return NextResponse.json({ ...result, ...usage });
 }

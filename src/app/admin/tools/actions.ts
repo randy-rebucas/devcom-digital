@@ -7,6 +7,7 @@ import { isAdmin } from "@/lib/permissions";
 import { prisma } from "@/lib/prisma";
 import { deleteFeatureImageIfBlob, uploadFeatureImage } from "@/lib/image-upload";
 import { createToolApiKey, revokeToolApiKey } from "@/lib/tool-api-keys";
+import { isSafeHttpUrl } from "@/lib/url";
 import type { ToolCategory, ToolStatus } from "@prisma/client";
 
 async function requireAdmin() {
@@ -50,6 +51,27 @@ async function uploadScreenshots(
   return { urls };
 }
 
+function validateToolUrls(urls: {
+  guideUrl: string | null;
+  downloadUrl: string | null;
+  imageUrl: string | null;
+  screenshots: string[];
+}): string | null {
+  const candidates = [
+    urls.guideUrl,
+    urls.downloadUrl,
+    urls.imageUrl,
+    ...urls.screenshots,
+  ].filter((url): url is string => Boolean(url));
+
+  for (const url of candidates) {
+    if (!isSafeHttpUrl(url)) {
+      return `Invalid URL (must be http:// or https://): ${url}`;
+    }
+  }
+  return null;
+}
+
 export type ToolFormState = { error?: string } | undefined;
 
 export async function createTool(
@@ -88,6 +110,9 @@ export async function createTool(
   const screenshotResult = await uploadScreenshots(formData);
   if ("error" in screenshotResult) return { error: screenshotResult.error };
   const screenshots = [...parseScreenshotUrls(formData.get("screenshotUrls")), ...screenshotResult.urls];
+
+  const urlError = validateToolUrls({ guideUrl, downloadUrl, imageUrl, screenshots });
+  if (urlError) return { error: urlError };
 
   const count = await prisma.tool.count();
 
@@ -156,6 +181,9 @@ export async function updateTool(
   const screenshotResult = await uploadScreenshots(formData);
   if ("error" in screenshotResult) return { error: screenshotResult.error };
   const screenshots = [...parseScreenshotUrls(formData.get("screenshotUrls")), ...screenshotResult.urls];
+
+  const urlError = validateToolUrls({ guideUrl, downloadUrl, imageUrl, screenshots });
+  if (urlError) return { error: urlError };
 
   await prisma.tool.update({
     where: { id },

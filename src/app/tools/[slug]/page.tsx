@@ -143,7 +143,7 @@ export default async function ToolDetailPage({
                     </ButtonLink>
                   </div>
                 ) : (
-                  <ToolDownloadLink slug={tool.slug} downloadUrl={tool.downloadUrl!} />
+                  <ToolDownloadLink slug={tool.slug} />
                 )}
               </section>
             </div>

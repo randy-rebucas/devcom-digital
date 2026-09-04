@@ -6,6 +6,7 @@ import { auth } from "@/lib/auth";
 import { isAdmin } from "@/lib/permissions";
 import { prisma } from "@/lib/prisma";
 import { deleteFeatureImageIfBlob, uploadFeatureImage } from "@/lib/image-upload";
+import { isSafeHttpUrl } from "@/lib/url";
 import type { ProjectStatus } from "@prisma/client";
 
 async function requireAdmin() {
@@ -49,6 +50,27 @@ async function uploadScreenshots(
   return { urls };
 }
 
+function validateProjectUrls(urls: {
+  liveUrl: string | null;
+  repoUrl: string | null;
+  imageUrl: string | null;
+  screenshots: string[];
+}): string | null {
+  const candidates = [
+    urls.liveUrl,
+    urls.repoUrl,
+    urls.imageUrl,
+    ...urls.screenshots,
+  ].filter((url): url is string => Boolean(url));
+
+  for (const url of candidates) {
+    if (!isSafeHttpUrl(url)) {
+      return `Invalid URL (must be http:// or https://): ${url}`;
+    }
+  }
+  return null;
+}
+
 export type ProjectFormState = { error?: string } | undefined;
 
 export async function createProject(
@@ -84,6 +106,9 @@ export async function createProject(
   const screenshotResult = await uploadScreenshots(formData);
   if ("error" in screenshotResult) return { error: screenshotResult.error };
   const screenshots = [...parseScreenshotUrls(formData.get("screenshotUrls")), ...screenshotResult.urls];
+
+  const urlError = validateProjectUrls({ liveUrl, repoUrl, imageUrl, screenshots });
+  if (urlError) return { error: urlError };
 
   const count = await prisma.project.count();
 
@@ -147,6 +172,9 @@ export async function updateProject(
   const screenshotResult = await uploadScreenshots(formData);
   if ("error" in screenshotResult) return { error: screenshotResult.error };
   const screenshots = [...parseScreenshotUrls(formData.get("screenshotUrls")), ...screenshotResult.urls];
+
+  const urlError = validateProjectUrls({ liveUrl, repoUrl, imageUrl, screenshots });
+  if (urlError) return { error: urlError };
 
   await prisma.project.update({
     where: { id },

@@ -41,6 +41,15 @@ export function ToolForm({
         <Input id="slug" name="slug" defaultValue={tool?.slug} placeholder="my-tool" />
       </Field>
 
+      <Field label="Tagline" htmlFor="tagline" hint="A short one-liner shown on tool cards.">
+        <Input
+          id="tagline"
+          name="tagline"
+          defaultValue={tool?.tagline ?? ""}
+          placeholder="A tool that does X for Y"
+        />
+      </Field>
+
       <Field label="Feature image URL" htmlFor="imageUrl" hint="Or upload an image below to override this.">
         <Input
           id="imageUrl"
@@ -92,6 +101,49 @@ export function ToolForm({
         />
       </Field>
 
+      <Field
+        label="Screenshot URLs"
+        htmlFor="screenshotUrls"
+        hint="One image URL per line. Removing a line removes that screenshot."
+      >
+        <Textarea
+          id="screenshotUrls"
+          name="screenshotUrls"
+          defaultValue={tool?.screenshots?.join("\n") ?? ""}
+          rows={4}
+          className="font-mono"
+          placeholder="https://..."
+        />
+      </Field>
+
+      <Field
+        label="Upload screenshots"
+        htmlFor="screenshotFiles"
+        hint="PNG, JPEG, or WebP. Max 5MB each. Appended to the URLs above."
+      >
+        <input
+          id="screenshotFiles"
+          name="screenshotFiles"
+          type="file"
+          accept="image/png,image/jpeg,image/webp"
+          multiple
+          className="block text-xs text-paper-dim file:mr-3 file:rounded-sm file:border file:border-hairline file:bg-ink file:px-3 file:py-1.5 file:text-xs file:font-semibold file:uppercase file:tracking-wide file:text-paper file:transition-colors hover:file:border-gold hover:file:text-gold-bright"
+        />
+        {tool?.screenshots && tool.screenshots.length > 0 && (
+          <div className="mt-3 flex flex-wrap gap-2">
+            {tool.screenshots.map((url) => (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                key={url}
+                src={url}
+                alt=""
+                className="h-16 w-16 rounded-sm border border-hairline object-cover"
+              />
+            ))}
+          </div>
+        )}
+      </Field>
+
       <Field label="Status" htmlFor="status">
         <Select id="status" name="status" defaultValue={tool?.status ?? "IN_DEVELOPMENT"}>
           {STATUS_OPTIONS.map((opt) => (
@@ -110,6 +162,19 @@ export function ToolForm({
             </option>
           ))}
         </Select>
+      </Field>
+
+      <Field label="Tags" htmlFor="tags" hint="Comma-separated, e.g. Shopify, Automation, CLI">
+        <Input
+          id="tags"
+          name="tags"
+          defaultValue={tool?.tags?.join(", ") ?? ""}
+          placeholder="Shopify, Automation, CLI"
+        />
+      </Field>
+
+      <Field label="Version" htmlFor="version" hint="Shown next to the download button, e.g. v2.3.1">
+        <Input id="version" name="version" defaultValue={tool?.version ?? ""} placeholder="v1.0.0" />
       </Field>
 
       <Field label="Download URL" htmlFor="downloadUrl">
@@ -153,6 +218,19 @@ export function ToolForm({
         />
         <label htmlFor="enabled" className="text-sm text-paper-dim">
           Enabled (visible to subscribers)
+        </label>
+      </div>
+
+      <div className="flex items-center gap-2">
+        <input
+          id="featured"
+          name="featured"
+          type="checkbox"
+          defaultChecked={tool?.featured ?? false}
+          className="h-4 w-4 rounded-sm border-hairline bg-ink text-gold focus-visible:outline-2 focus-visible:outline-gold-bright"
+        />
+        <label htmlFor="featured" className="text-sm text-paper-dim">
+          Featured (highlighted at the top of the showcase)
         </label>
       </div>
 

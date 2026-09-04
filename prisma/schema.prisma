@@ -121,8 +121,13 @@ model Tool {
   id                 String       @id @default(cuid())
   slug               String       @unique
   name               String
+  tagline            String?
   desc               String       @db.Text
   imageUrl           String?
+  screenshots        String[]     @default([])
+  tags               String[]     @default([])
+  featured           Boolean      @default(false)
+  version            String?
   status             ToolStatus   @default(IN_DEVELOPMENT)
   category           ToolCategory @default(OTHER)
   guideUrl           String?
@@ -169,19 +174,20 @@ model ToolDownload {
 }
 
 model Project {
-  id        String        @id @default(cuid())
-  slug      String        @unique
-  name      String
-  tagline   String?
-  desc      String        @db.Text
-  imageUrl  String?
-  tags      String[]      @default([])
-  featured  Boolean       @default(false)
-  status    ProjectStatus @default(IN_PROGRESS)
-  liveUrl   String?
-  repoUrl   String?
-  enabled   Boolean       @default(true)
-  order     Int           @default(0)
-  createdAt DateTime      @default(now())
-  updatedAt DateTime      @updatedAt
+  id          String        @id @default(cuid())
+  slug        String        @unique
+  name        String
+  tagline     String?
+  desc        String        @db.Text
+  imageUrl    String?
+  screenshots String[]      @default([])
+  tags        String[]      @default([])
+  featured    Boolean       @default(false)
+  status      ProjectStatus @default(IN_PROGRESS)
+  liveUrl     String?
+  repoUrl     String?
+  enabled     Boolean       @default(true)
+  order       Int           @default(0)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
 }

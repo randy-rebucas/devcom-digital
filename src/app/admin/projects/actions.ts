@@ -29,6 +29,26 @@ function parseTags(value: FormDataEntryValue | null) {
     .filter(Boolean);
 }
 
+function parseScreenshotUrls(value: FormDataEntryValue | null) {
+  return String(value ?? "")
+    .split("\n")
+    .map((url) => url.trim())
+    .filter(Boolean);
+}
+
+async function uploadScreenshots(
+  formData: FormData,
+): Promise<{ urls: string[] } | { error: string }> {
+  const files = formData.getAll("screenshotFiles").filter((f): f is File => f instanceof File && f.size > 0);
+  const urls: string[] = [];
+  for (const file of files) {
+    const result = await uploadFeatureImage(file, "projects/screenshots");
+    if ("error" in result) return { error: result.error };
+    urls.push(result.url);
+  }
+  return { urls };
+}
+
 export type ProjectFormState = { error?: string } | undefined;
 
 export async function createProject(
@@ -61,6 +81,10 @@ export async function createProject(
     imageUrl = result.url;
   }
 
+  const screenshotResult = await uploadScreenshots(formData);
+  if ("error" in screenshotResult) return { error: screenshotResult.error };
+  const screenshots = [...parseScreenshotUrls(formData.get("screenshotUrls")), ...screenshotResult.urls];
+
   const count = await prisma.project.count();
 
   await prisma.project.create({
@@ -73,6 +97,7 @@ export async function createProject(
       liveUrl,
       repoUrl,
       imageUrl,
+      screenshots,
       tags,
       enabled,
       featured,
@@ -119,9 +144,13 @@ export async function updateProject(
     imageUrl = result.url;
   }
 
+  const screenshotResult = await uploadScreenshots(formData);
+  if ("error" in screenshotResult) return { error: screenshotResult.error };
+  const screenshots = [...parseScreenshotUrls(formData.get("screenshotUrls")), ...screenshotResult.urls];
+
   await prisma.project.update({
     where: { id },
-    data: { slug, name, tagline, desc, status, liveUrl, repoUrl, imageUrl, tags, enabled, featured },
+    data: { slug, name, tagline, desc, status, liveUrl, repoUrl, imageUrl, screenshots, tags, enabled, featured },
   });
 
   revalidatePath("/admin/projects");

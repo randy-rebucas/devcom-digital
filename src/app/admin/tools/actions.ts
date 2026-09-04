@@ -23,6 +23,33 @@ function slugify(input: string) {
     .replace(/(^-|-$)/g, "");
 }
 
+function parseTags(value: FormDataEntryValue | null) {
+  return String(value ?? "")
+    .split(",")
+    .map((tag) => tag.trim())
+    .filter(Boolean);
+}
+
+function parseScreenshotUrls(value: FormDataEntryValue | null) {
+  return String(value ?? "")
+    .split("\n")
+    .map((url) => url.trim())
+    .filter(Boolean);
+}
+
+async function uploadScreenshots(
+  formData: FormData,
+): Promise<{ urls: string[] } | { error: string }> {
+  const files = formData.getAll("screenshotFiles").filter((f): f is File => f instanceof File && f.size > 0);
+  const urls: string[] = [];
+  for (const file of files) {
+    const result = await uploadFeatureImage(file, "tools/screenshots");
+    if ("error" in result) return { error: result.error };
+    urls.push(result.url);
+  }
+  return { urls };
+}
+
 export type ToolFormState = { error?: string } | undefined;
 
 export async function createTool(
@@ -32,14 +59,18 @@ export async function createTool(
   await requireAdmin();
 
   const name = String(formData.get("name") ?? "").trim();
+  const tagline = String(formData.get("tagline") ?? "").trim() || null;
   const desc = String(formData.get("desc") ?? "").trim();
   const status = String(formData.get("status") ?? "IN_DEVELOPMENT") as ToolStatus;
   const category = String(formData.get("category") ?? "OTHER") as ToolCategory;
   const guideUrl = String(formData.get("guideUrl") ?? "").trim() || null;
   const downloadUrl = String(formData.get("downloadUrl") ?? "").trim() || null;
   let imageUrl = String(formData.get("imageUrl") ?? "").trim() || null;
+  const tags = parseTags(formData.get("tags"));
+  const version = String(formData.get("version") ?? "").trim() || null;
   const requiresLicenseKey = formData.get("requiresLicenseKey") === "on";
   const enabled = formData.get("enabled") === "on";
+  const featured = formData.get("featured") === "on";
   const slugInput = String(formData.get("slug") ?? "").trim();
   const slug = slugify(slugInput || name);
 
@@ -54,20 +85,29 @@ export async function createTool(
     imageUrl = result.url;
   }
 
+  const screenshotResult = await uploadScreenshots(formData);
+  if ("error" in screenshotResult) return { error: screenshotResult.error };
+  const screenshots = [...parseScreenshotUrls(formData.get("screenshotUrls")), ...screenshotResult.urls];
+
   const count = await prisma.tool.count();
 
   await prisma.tool.create({
     data: {
       slug,
       name,
+      tagline,
       desc,
       status,
       category,
       guideUrl,
       downloadUrl,
       imageUrl,
+      screenshots,
+      tags,
+      version,
       requiresLicenseKey,
       enabled,
+      featured,
       order: count,
     },
   });
@@ -85,14 +125,18 @@ export async function updateTool(
   await requireAdmin();
 
   const name = String(formData.get("name") ?? "").trim();
+  const tagline = String(formData.get("tagline") ?? "").trim() || null;
   const desc = String(formData.get("desc") ?? "").trim();
   const status = String(formData.get("status") ?? "IN_DEVELOPMENT") as ToolStatus;
   const category = String(formData.get("category") ?? "OTHER") as ToolCategory;
   const guideUrl = String(formData.get("guideUrl") ?? "").trim() || null;
   const downloadUrl = String(formData.get("downloadUrl") ?? "").trim() || null;
   let imageUrl = String(formData.get("imageUrl") ?? "").trim() || null;
+  const tags = parseTags(formData.get("tags"));
+  const version = String(formData.get("version") ?? "").trim() || null;
   const requiresLicenseKey = formData.get("requiresLicenseKey") === "on";
   const enabled = formData.get("enabled") === "on";
+  const featured = formData.get("featured") === "on";
   const slugInput = String(formData.get("slug") ?? "").trim();
   const slug = slugify(slugInput || name);
 
@@ -109,9 +153,29 @@ export async function updateTool(
     imageUrl = result.url;
   }
 
+  const screenshotResult = await uploadScreenshots(formData);
+  if ("error" in screenshotResult) return { error: screenshotResult.error };
+  const screenshots = [...parseScreenshotUrls(formData.get("screenshotUrls")), ...screenshotResult.urls];
+
   await prisma.tool.update({
     where: { id },
-    data: { slug, name, desc, status, category, guideUrl, downloadUrl, imageUrl, requiresLicenseKey, enabled },
+    data: {
+      slug,
+      name,
+      tagline,
+      desc,
+      status,
+      category,
+      guideUrl,
+      downloadUrl,
+      imageUrl,
+      screenshots,
+      tags,
+      version,
+      requiresLicenseKey,
+      enabled,
+      featured,
+    },
   });
 
   revalidatePath("/admin/tools");

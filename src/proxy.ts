@@ -5,7 +5,7 @@ export async function proxy(request: Request) {
   const session = await auth();
   const { pathname } = new URL(request.url);
 
-  const protectedPaths = ["/dashboard", "/tools", "/admin"];
+  const protectedPaths = ["/dashboard", "/admin"];
   if (protectedPaths.some((p) => pathname.startsWith(p)) && !session?.user) {
     return NextResponse.redirect(new URL("/login", request.url));
   }

@@ -1,7 +1,6 @@
 import Link from "next/link";
-import { redirect } from "next/navigation";
 import { Navbar } from "@/components/navbar";
-import { SubscriptionRequired } from "@/components/subscription-required";
+import { ButtonLink } from "@/components/ui/button";
 import { ToolStatusBadge } from "@/components/tool-status-badge";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
@@ -9,24 +8,18 @@ import { groupToolsByCategory, listEnabledTools, stripMarkdown } from "@/lib/too
 
 export default async function ToolsPage() {
   const session = await auth();
-  if (!session?.user?.id) redirect("/login");
 
   const [subscription, license, tools] = await Promise.all([
-    prisma.subscription.findUnique({ where: { userId: session.user.id } }),
-    prisma.license.findUnique({ where: { userId: session.user.id } }),
+    session?.user?.id
+      ? prisma.subscription.findUnique({ where: { userId: session.user.id } })
+      : null,
+    session?.user?.id
+      ? prisma.license.findUnique({ where: { userId: session.user.id } })
+      : null,
     listEnabledTools(),
   ]);
 
   const isActive = subscription?.status === "ACTIVE" && license?.active;
-
-  if (!isActive) {
-    return (
-      <>
-        <Navbar />
-        <SubscriptionRequired />
-      </>
-    );
-  }
 
   return (
     <>
@@ -36,9 +29,31 @@ export default async function ToolsPage() {
           <h1 className="font-display text-2xl font-bold tracking-tight text-paper">
             Tools suite
           </h1>
-          <p className="mt-1 text-sm text-paper-dim">
-            Licensed to {session.user.email}
-          </p>
+          {session?.user?.email ? (
+            <p className="mt-1 text-sm text-paper-dim">
+              Licensed to {session.user.email}
+            </p>
+          ) : (
+            <p className="mt-1 text-sm text-paper-dim">
+              Browse the tools below. Log in with an active subscription to
+              download.
+            </p>
+          )}
+          {!isActive && (
+            <div className="mt-6 flex flex-wrap items-center gap-3 border border-hairline bg-ink-raised px-4 py-3 text-sm text-paper-dim">
+              <span>
+                {session?.user?.id
+                  ? "A subscription is required to download tools."
+                  : "Log in and subscribe to download tools."}
+              </span>
+              <ButtonLink
+                href={session?.user?.id ? "/pricing" : "/login"}
+                size="sm"
+              >
+                {session?.user?.id ? "Subscribe" : "Log in"}
+              </ButtonLink>
+            </div>
+          )}
           {tools.length === 0 ? (
             <p className="mt-10 border-t border-hairline pt-8 text-sm text-paper-dim">
               No tools are available yet. Check back soon.
@@ -70,14 +85,38 @@ export default async function ToolsPage() {
                             <span className="font-mono text-xs text-gold-dim">
                               No. {(i + 1).toString().padStart(2, "0")}
                             </span>
-                            <ToolStatusBadge status={tool.status} className="shrink-0" />
+                            <div className="flex shrink-0 items-center gap-2">
+                              {tool.featured && (
+                                <span className="rounded-sm border border-gold/40 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-gold-bright">
+                                  Featured
+                                </span>
+                              )}
+                              <ToolStatusBadge status={tool.status} />
+                            </div>
                           </div>
                           <h3 className="font-display text-xl font-bold tracking-tight text-paper group-hover:text-gold-bright">
                             {tool.name}
+                            {tool.version && (
+                              <span className="ml-2 font-mono text-xs font-normal text-paper-dim">
+                                {tool.version}
+                              </span>
+                            )}
                           </h3>
                           <p className="line-clamp-2 text-sm text-paper-dim">
-                            {stripMarkdown(tool.desc)}
+                            {tool.tagline || stripMarkdown(tool.desc)}
                           </p>
+                          {tool.tags.length > 0 && (
+                            <ul className="mt-auto flex flex-wrap gap-1.5 pt-1">
+                              {tool.tags.map((tag) => (
+                                <li
+                                  key={tag}
+                                  className="rounded-sm border border-hairline px-1.5 py-0.5 text-[10px] text-paper-dim"
+                                >
+                                  {tag}
+                                </li>
+                              ))}
+                            </ul>
+                          )}
                         </Link>
                       </li>
                     ))}

@@ -43,8 +43,16 @@ export default async function AdminToolsPage() {
                     lit={tool.enabled}
                     label={tool.enabled ? "Enabled" : "Disabled"}
                   />
+                  {tool.featured && (
+                    <span className="rounded-sm border border-gold/40 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-gold-bright">
+                      Featured
+                    </span>
+                  )}
                 </div>
-                <p className="truncate text-sm text-paper-dim">/tools/{tool.slug}</p>
+                <p className="truncate text-sm text-paper-dim">
+                  /tools/{tool.slug}
+                  {tool.version ? ` · ${tool.version}` : ""}
+                </p>
                 <p className="mt-0.5 text-xs text-paper-dim">
                   {tool.downloadCount} download{tool.downloadCount === 1 ? "" : "s"}
                 </p>

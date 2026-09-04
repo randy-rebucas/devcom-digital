@@ -94,6 +94,49 @@ export function ProjectForm({
         />
       </Field>
 
+      <Field
+        label="Screenshot URLs"
+        htmlFor="screenshotUrls"
+        hint="One image URL per line. Removing a line removes that screenshot."
+      >
+        <Textarea
+          id="screenshotUrls"
+          name="screenshotUrls"
+          defaultValue={project?.screenshots?.join("\n") ?? ""}
+          rows={4}
+          className="font-mono"
+          placeholder="https://..."
+        />
+      </Field>
+
+      <Field
+        label="Upload screenshots"
+        htmlFor="screenshotFiles"
+        hint="PNG, JPEG, or WebP. Max 5MB each. Appended to the URLs above."
+      >
+        <input
+          id="screenshotFiles"
+          name="screenshotFiles"
+          type="file"
+          accept="image/png,image/jpeg,image/webp"
+          multiple
+          className="block text-xs text-paper-dim file:mr-3 file:rounded-sm file:border file:border-hairline file:bg-ink file:px-3 file:py-1.5 file:text-xs file:font-semibold file:uppercase file:tracking-wide file:text-paper file:transition-colors hover:file:border-gold hover:file:text-gold-bright"
+        />
+        {project?.screenshots && project.screenshots.length > 0 && (
+          <div className="mt-3 flex flex-wrap gap-2">
+            {project.screenshots.map((url) => (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                key={url}
+                src={url}
+                alt=""
+                className="h-16 w-16 rounded-sm border border-hairline object-cover"
+              />
+            ))}
+          </div>
+        )}
+      </Field>
+
       <Field label="Tech stack / tags" htmlFor="tags" hint="Comma-separated, e.g. Next.js, PostgreSQL, Stripe">
         <Input
           id="tags"

@@ -100,6 +100,22 @@ export default async function ProjectDetailPage({
             <ReactMarkdown>{project.desc}</ReactMarkdown>
           </div>
 
+          {project.screenshots.length > 0 && (
+            <div className="mt-8 grid grid-cols-2 gap-3 border-t border-hairline pt-6 sm:grid-cols-3">
+              {project.screenshots.map((url) => (
+                <a key={url} href={url} target="_blank" rel="noopener noreferrer">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={url}
+                    alt=""
+                    loading="lazy"
+                    className="aspect-video w-full rounded-sm border border-hairline bg-ink-raised object-cover transition-opacity hover:opacity-80"
+                  />
+                </a>
+              ))}
+            </div>
+          )}
+
           <div className="mt-8 flex flex-wrap gap-4 border-t border-hairline pt-6">
             {project.liveUrl && (
               <a

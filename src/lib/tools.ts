@@ -51,7 +51,7 @@ export function listTools() {
 export function listEnabledTools() {
   return prisma.tool.findMany({
     where: { enabled: true },
-    orderBy: { order: "asc" },
+    orderBy: [{ featured: "desc" }, { order: "asc" }],
   });
 }
 

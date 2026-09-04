@@ -4,22 +4,20 @@ import { LicenseKeyReveal } from "@/components/license-key-reveal";
 import { StatusIndicator } from "@/components/ui/status-indicator";
 import { ButtonLink } from "@/components/ui/button";
 import { auth } from "@/lib/auth";
+import { getUserEntitlements } from "@/lib/entitlements";
 import { prisma } from "@/lib/prisma";
 
 export default async function DashboardPage() {
   const session = await auth();
   if (!session?.user?.id) redirect("/login");
 
-  const [subscription, license, user] = await Promise.all([
-    prisma.subscription.findUnique({ where: { userId: session.user.id } }),
-    prisma.license.findUnique({ where: { userId: session.user.id } }),
+  const [{ subscription, license, isActive }, user] = await Promise.all([
+    getUserEntitlements(session.user.id),
     prisma.user.findUnique({
       where: { id: session.user.id },
       select: { lastLoginAt: true, lastLoginIp: true },
     }),
   ]);
-
-  const isActive = subscription?.status === "ACTIVE" && license?.active;
 
   return (
     <>

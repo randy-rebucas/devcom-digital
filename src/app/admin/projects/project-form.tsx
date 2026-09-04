@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState, useRef, useState } from "react";
+import Image from "next/image";
 import type { Project } from "@prisma/client";
 import type { ProjectFormState } from "./actions";
 import { Button } from "@/components/ui/button";
@@ -125,11 +126,12 @@ export function ProjectForm({
         {project?.screenshots && project.screenshots.length > 0 && (
           <div className="mt-3 flex flex-wrap gap-2">
             {project.screenshots.map((url) => (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
+              <Image
                 key={url}
                 src={url}
                 alt=""
+                width={64}
+                height={64}
                 className="h-16 w-16 rounded-sm border border-hairline object-cover"
               />
             ))}

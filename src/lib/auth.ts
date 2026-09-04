@@ -3,11 +3,21 @@ import Credentials from "next-auth/providers/credentials";
 import { CredentialsSignin } from "next-auth";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import bcrypt from "bcryptjs";
+import { cache } from "react";
 import { prisma } from "@/lib/prisma";
 
 class EmailNotVerifiedError extends CredentialsSignin {
   code = "email-not-verified";
 }
+
+// Dedupes the session-validity lookup across the multiple auth() calls
+// (navbar, layouts, pages) that happen within a single request render.
+const getSessionUser = cache((id: string) =>
+  prisma.user.findUnique({
+    where: { id },
+    select: { currentSessionId: true },
+  })
+);
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
@@ -63,10 +73,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         return token;
       }
 
-      const dbUser = await prisma.user.findUnique({
-        where: { id: token.id as string },
-        select: { currentSessionId: true },
-      });
+      const dbUser = await getSessionUser(token.id as string);
       if (!dbUser || dbUser.currentSessionId !== token.sessionId) {
         return null;
       }

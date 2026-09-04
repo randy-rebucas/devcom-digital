@@ -1,25 +1,19 @@
+import Image from "next/image";
 import Link from "next/link";
 import { Navbar } from "@/components/navbar";
 import { ButtonLink } from "@/components/ui/button";
 import { ToolStatusBadge } from "@/components/tool-status-badge";
 import { auth } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
+import { getUserEntitlements } from "@/lib/entitlements";
 import { groupToolsByCategory, listEnabledTools, stripMarkdown } from "@/lib/tools";
 
 export default async function ToolsPage() {
   const session = await auth();
 
-  const [subscription, license, tools] = await Promise.all([
-    session?.user?.id
-      ? prisma.subscription.findUnique({ where: { userId: session.user.id } })
-      : null,
-    session?.user?.id
-      ? prisma.license.findUnique({ where: { userId: session.user.id } })
-      : null,
+  const [{ isActive }, tools] = await Promise.all([
+    getUserEntitlements(session?.user?.id),
     listEnabledTools(),
   ]);
-
-  const isActive = subscription?.status === "ACTIVE" && license?.active;
 
   return (
     <>
@@ -60,7 +54,7 @@ export default async function ToolsPage() {
             </p>
           ) : (
             <div className="mt-8 space-y-12">
-              {groupToolsByCategory(tools).map(({ category, label, tools: groupTools }) => (
+              {groupToolsByCategory(tools).map(({ category, label, tools: groupTools }, sectionIndex) => (
                 <section key={category}>
                   <h2 className="font-display text-lg font-bold tracking-tight text-paper">
                     {label}
@@ -73,13 +67,17 @@ export default async function ToolsPage() {
                           className="group flex h-full flex-col gap-3 p-6 transition-colors hover:bg-ink-raised"
                         >
                           {tool.imageUrl && (
-                            // eslint-disable-next-line @next/next/no-img-element
-                            <img
-                              src={tool.imageUrl}
-                              alt=""
-                              loading="lazy"
-                              className="-mt-6 -mx-6 mb-1 h-32 w-[calc(100%+3rem)] border-b border-hairline bg-ink object-cover"
-                            />
+                            <div className="relative -mt-6 -mx-6 mb-1 h-32 w-[calc(100%+3rem)] border-b border-hairline bg-ink">
+                              <Image
+                                src={tool.imageUrl}
+                                alt=""
+                                fill
+                                sizes="(min-width: 640px) 50vw, 100vw"
+                                loading={sectionIndex === 0 && i === 0 ? "eager" : "lazy"}
+                                priority={sectionIndex === 0 && i === 0}
+                                className="object-cover"
+                              />
+                            </div>
                           )}
                           <div className="flex items-start justify-between gap-3">
                             <span className="font-mono text-xs text-gold-dim">

@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
@@ -71,7 +72,7 @@ export default async function ProjectDetailPage({
               src={project.imageUrl}
               alt={project.name}
               loading="lazy"
-              className="mt-4 h-56 w-full rounded-sm border border-hairline bg-ink-raised object-cover"
+              className="mt-4 h-auto w-full rounded-sm border border-hairline bg-ink-raised"
             />
           )}
 
@@ -103,13 +104,20 @@ export default async function ProjectDetailPage({
           {project.screenshots.length > 0 && (
             <div className="mt-8 grid grid-cols-2 gap-3 border-t border-hairline pt-6 sm:grid-cols-3">
               {project.screenshots.map((url) => (
-                <a key={url} href={url} target="_blank" rel="noopener noreferrer">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
+                <a
+                  key={url}
+                  href={url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="relative block aspect-video w-full overflow-hidden rounded-sm border border-hairline bg-ink-raised transition-opacity hover:opacity-80"
+                >
+                  <Image
                     src={url}
                     alt=""
+                    fill
+                    sizes="(min-width: 640px) 33vw, 50vw"
                     loading="lazy"
-                    className="aspect-video w-full rounded-sm border border-hairline bg-ink-raised object-cover transition-opacity hover:opacity-80"
+                    className="object-cover"
                   />
                 </a>
               ))}

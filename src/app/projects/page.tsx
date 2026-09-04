@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { Navbar } from "@/components/navbar";
@@ -62,13 +63,17 @@ export default async function ProjectsPage() {
                     className="group flex h-full flex-col gap-3 p-6 transition-colors hover:bg-ink-raised"
                   >
                     {project.imageUrl && (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        src={project.imageUrl}
-                        alt={project.name}
-                        loading="lazy"
-                        className="-mt-6 -mx-6 mb-1 h-32 w-[calc(100%+3rem)] border-b border-hairline bg-ink object-cover"
-                      />
+                      <div className="relative -mt-6 -mx-6 mb-1 h-32 w-[calc(100%+3rem)] border-b border-hairline bg-ink">
+                        <Image
+                          src={project.imageUrl}
+                          alt={project.name}
+                          fill
+                          sizes="(min-width: 640px) 50vw, 100vw"
+                          loading={i === 0 ? "eager" : "lazy"}
+                          priority={i === 0}
+                          className="object-cover"
+                        />
+                      </div>
                     )}
                     <div className="flex items-start justify-between gap-3">
                       <span className="font-mono text-xs text-gold-dim">

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import ReactMarkdown from "react-markdown";
@@ -7,7 +8,7 @@ import { ButtonLink } from "@/components/ui/button";
 import { ToolDownloadLink } from "@/components/tool-download-link";
 import { ToolStatusBadge } from "@/components/tool-status-badge";
 import { auth } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
+import { getUserEntitlements } from "@/lib/entitlements";
 import { getEnabledToolBySlug, stripMarkdown } from "@/lib/tools";
 
 export async function generateMetadata({
@@ -35,17 +36,7 @@ export default async function ToolDetailPage({
   if (!tool) notFound();
 
   const session = await auth();
-
-  const [subscription, license] = await Promise.all([
-    session?.user?.id
-      ? prisma.subscription.findUnique({ where: { userId: session.user.id } })
-      : null,
-    session?.user?.id
-      ? prisma.license.findUnique({ where: { userId: session.user.id } })
-      : null,
-  ]);
-
-  const isActive = subscription?.status === "ACTIVE" && license?.active;
+  const { isActive } = await getUserEntitlements(session?.user?.id);
 
   return (
     <>
@@ -65,7 +56,7 @@ export default async function ToolDetailPage({
               src={tool.imageUrl}
               alt={tool.name}
               loading="lazy"
-              className="mt-4 h-56 w-full rounded-sm border border-hairline bg-ink-raised object-cover"
+              className="mt-4 h-auto w-full rounded-sm border border-hairline bg-ink-raised"
             />
           )}
 
@@ -102,13 +93,20 @@ export default async function ToolDetailPage({
           {tool.screenshots.length > 0 && (
             <div className="mt-8 grid grid-cols-2 gap-3 border-t border-hairline pt-6 sm:grid-cols-3">
               {tool.screenshots.map((url) => (
-                <a key={url} href={url} target="_blank" rel="noopener noreferrer">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
+                <a
+                  key={url}
+                  href={url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="relative block aspect-video w-full overflow-hidden rounded-sm border border-hairline bg-ink-raised transition-opacity hover:opacity-80"
+                >
+                  <Image
                     src={url}
                     alt=""
+                    fill
+                    sizes="(min-width: 640px) 33vw, 50vw"
                     loading="lazy"
-                    className="aspect-video w-full rounded-sm border border-hairline bg-ink-raised object-cover transition-opacity hover:opacity-80"
+                    className="object-cover"
                   />
                 </a>
               ))}

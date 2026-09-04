@@ -35,10 +35,10 @@ Design notes:
 
 ## 3. SDK shape
 
-Package: `@devcom/license-sdk` (Node/TS, works in any backend — the tools don't have to be Next.js).
+Package: `@devcomdigital/license-sdk` (Node/TS, works in any backend — the tools don't have to be Next.js).
 
 ```ts
-import { DevcomLicense } from "@devcom/license-sdk";
+import { DevcomLicense } from "@devcomdigital/license-sdk";
 
 const license = new DevcomLicense({
   apiKey: process.env.DEVCOM_TOOL_API_KEY, // issued per-tool in the admin area
@@ -61,7 +61,7 @@ Requirements:
 ## 4. Rollout plan
 
 1. Add `POST /api/license/verify` (+ per-tool API key issuance in the admin area, reusing the existing admin/Tool CRUD screens).
-2. Publish `@devcom/license-sdk` as a private npm package (or a git-installable package if no registry yet).
+2. ~~Publish `@devcomdigital/license-sdk` as a private npm package~~ — done: published publicly at [npmjs.com/package/@devcomdigital/license-sdk](https://www.npmjs.com/package/@devcomdigital/license-sdk).
 3. Wire the SDK into the download route ([download/route.ts](../src/app/api/tools/[slug]/download/route.ts)) itself first, replacing the direct Prisma check — dogfooding proves the contract before external tools depend on it.
 4. Document integration steps for tool owners (README in the SDK repo): install, get API key from admin, call `verify()`, handle the three outcomes.
 5. Roll out to each real tool as it comes online, gated by `Tool.requiresLicenseKey`.
@@ -83,7 +83,7 @@ Phase 1 (this repo, devcom-digital):
   subscription, unknown key, wrong tool API key.
 
 Phase 2 (new package):
-- Scaffold @devcom/license-sdk as a standalone TypeScript package per
+- Scaffold @devcomdigital/license-sdk as a standalone TypeScript package per
   section 3 of the plan: verify(), in-memory TTL cache, typed error reasons,
   fail-closed default with a failOpen option, and an optional Express/
   Next.js requireLicense() middleware helper.

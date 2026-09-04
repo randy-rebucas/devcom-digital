@@ -20,16 +20,11 @@ Node 18+ (uses the global `fetch`/`AbortController`).
 
 ## Install
 
-Not published to a registry yet — install directly from this repo/path
-(git dependency or local `file:` path), e.g.:
-
-```json
-{
-  "dependencies": {
-    "@devcomdigital/license-sdk": "file:../devcom-digital/packages/license-sdk"
-  }
-}
 ```
+npm install @devcomdigital/license-sdk
+```
+
+Published publicly on npm — see [@devcomdigital/license-sdk](https://www.npmjs.com/package/@devcomdigital/license-sdk).
 
 ## Get an API key
 

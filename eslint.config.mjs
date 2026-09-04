@@ -14,6 +14,8 @@ const eslintConfig = defineConfig([
     "next-env.d.ts",
     // Standalone package with its own tooling/tsconfig, not part of the app build.
     "packages/**",
+    // Scratch Playwright scripts from design review sessions, not app source.
+    ".impeccable/**",
   ]),
 ]);
 

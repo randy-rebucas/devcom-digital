@@ -12,6 +12,12 @@ for the full design and rollout plan.
 Devcom's backend; keep it server-side (env var), and only call `verify()`
 from your own backend after receiving a license key from your user.
 
+Ships as both CommonJS and ESM with bundled type declarations, so it works
+the same from a plain `require()` Node script, a `"type": "module"` /
+ESM project, or a TypeScript codebase (Next.js API routes, Express,
+Fastify, NestJS, etc.) — no separate build needed per consumer. Requires
+Node 18+ (uses the global `fetch`/`AbortController`).
+
 ## Install
 
 Not published to a registry yet — install directly from this repo/path
@@ -34,6 +40,7 @@ shown once and stored elsewhere only as a hash.
 ## Usage
 
 ```ts
+// ESM / TypeScript
 import { DevcomLicense } from "@devcom/license-sdk";
 
 const license = new DevcomLicense({
@@ -50,6 +57,14 @@ if (!result.valid) {
 }
 
 // result.userId is the Devcom user id the key belongs to.
+```
+
+```js
+// CommonJS — identical API, just require() instead of import
+const { DevcomLicense } = require("@devcom/license-sdk");
+
+const license = new DevcomLicense({ apiKey: process.env.DEVCOM_TOOL_API_KEY });
+const result = await license.verify(userSuppliedKey);
 ```
 
 ### Options
@@ -81,6 +96,6 @@ app.use("/api/protected", requireLicense(license));
 
 ```bash
 npm install
-npm run build      # compiles src/ -> dist/
+npm run build      # tsup: emits dist/*.cjs + dist/*.js (ESM) + .d.ts/.d.cts
 npm run typecheck
 ```

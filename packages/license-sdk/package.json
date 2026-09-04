@@ -5,18 +5,31 @@
   "license": "UNLICENSED",
   "private": true,
   "type": "module",
-  "main": "./dist/index.js",
+  "engines": {
+    "node": ">=18"
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
-    ".": "./dist/index.js",
-    "./express": "./dist/middleware/express.js"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./express": {
+      "types": "./dist/middleware/express.d.ts",
+      "import": "./dist/middleware/express.js",
+      "require": "./dist/middleware/express.cjs"
+    },
+    "./package.json": "./package.json"
   },
   "files": [
     "dist"
   ],
   "scripts": {
-    "build": "tsc -p .",
-    "dev": "tsc -p . --watch",
+    "build": "tsup",
+    "dev": "tsup --watch",
     "typecheck": "tsc -p . --noEmit"
   },
   "peerDependencies": {
@@ -30,6 +43,7 @@
   "devDependencies": {
     "@types/express": "^4.17.21",
     "@types/node": "^20",
+    "tsup": "^8.3.5",
     "typescript": "^5.7.0"
   }
 }

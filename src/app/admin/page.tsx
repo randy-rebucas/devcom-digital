@@ -5,16 +5,18 @@ import { prisma } from "@/lib/prisma";
 export default async function AdminOverviewPage() {
   const session = await auth();
 
-  const [toolCount, projectCount, userCount, adminCount] = await Promise.all([
+  const [toolCount, projectCount, userCount, adminCount, requestCount] = await Promise.all([
     prisma.tool.count(),
     prisma.project.count(),
     prisma.user.count(),
     prisma.user.count({ where: { role: "ADMIN" } }),
+    prisma.quoteRequest.count(),
   ]);
 
   const cards = [
     { href: "/admin/tools", label: "Tools", value: toolCount, desc: "Manage the tools suite" },
     { href: "/admin/projects", label: "Projects", value: projectCount, desc: "Manage the projects section" },
+    { href: "/admin/requests", label: "Requests", value: requestCount, desc: "Member quote requests" },
     { href: "/admin/users", label: "Users", value: userCount, desc: `${adminCount} admin${adminCount === 1 ? "" : "s"}` },
   ];
 

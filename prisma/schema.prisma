@@ -37,6 +37,20 @@ enum ProjectStatus {
   COMPLETED
 }
 
+enum QuoteRequestStatus {
+  PENDING
+  QUOTED
+  ACCEPTED
+  DECLINED
+  FAILED
+}
+
+enum QuoteRequestKind {
+  TOOL
+  PROJECT
+  CUSTOM
+}
+
 model User {
   id            String    @id @default(cuid())
   name          String?
@@ -57,6 +71,7 @@ model User {
   subscription  Subscription?
   license       License?
   toolDownloads ToolDownload[]
+  quoteRequests QuoteRequest[]
 }
 
 model Account {
@@ -139,8 +154,9 @@ model Tool {
   createdAt          DateTime     @default(now())
   updatedAt          DateTime     @updatedAt
 
-  downloads ToolDownload[]
-  apiKeys   ToolApiKey[]
+  downloads     ToolDownload[]
+  apiKeys       ToolApiKey[]
+  quoteRequests QuoteRequest[]
 }
 
 /// API key issued to a tool so its (possibly external) backend can call
@@ -190,4 +206,39 @@ model Project {
   order       Int           @default(0)
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
+
+  quoteRequests QuoteRequest[]
+}
+
+model QuoteRequest {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  kind      QuoteRequestKind
+  toolId    String?
+  tool      Tool?             @relation(fields: [toolId], references: [id], onDelete: SetNull)
+  projectId String?
+  project   Project?          @relation(fields: [projectId], references: [id], onDelete: SetNull)
+
+  title       String
+  description String @db.Text
+
+  status QuoteRequestStatus @default(PENDING)
+
+  quoteSummary  String?   @db.Text
+  quoteScope    Json?
+  quoteTimeline String?   @db.Text
+  quoteEstimate String?
+  quoteRaw      String?   @db.Text
+  quotedAt      DateTime?
+  regenerationCount Int   @default(0)
+
+  errorMessage String? @db.Text
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([status])
 }

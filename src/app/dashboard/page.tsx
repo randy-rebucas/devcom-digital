@@ -94,6 +94,18 @@ export default async function DashboardPage() {
                 Go to tools
               </ButtonLink>
             </section>
+
+            <section className="border-b border-hairline py-6">
+              <h2 className="text-xs font-semibold uppercase tracking-wide text-paper-dim">
+                Quote requests
+              </h2>
+              <p className="mt-3 text-sm text-paper-dim">
+                Request a tool or project idea and get an AI-drafted quotation.
+              </p>
+              <ButtonLink href="/requests" variant="secondary" size="sm" className="mt-4">
+                View requests
+              </ButtonLink>
+            </section>
           </div>
         </div>
       </main>

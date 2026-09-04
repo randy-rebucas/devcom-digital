@@ -1,9 +1,11 @@
 {
-  "name": "@devcom/license-sdk",
+  "name": "@devcomdigital/license-sdk",
   "version": "0.1.0",
   "description": "Server-side client for verifying Devcom Digital subscriber license keys.",
   "license": "UNLICENSED",
-  "private": true,
+  "publishConfig": {
+    "access": "public"
+  },
   "type": "module",
   "engines": {
     "node": ">=18"

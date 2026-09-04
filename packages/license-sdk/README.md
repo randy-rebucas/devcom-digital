@@ -1,4 +1,4 @@
-# @devcom/license-sdk
+# @devcomdigital/license-sdk
 
 Server-side client for verifying a Devcom Digital subscriber's license key from
 any tool in the suite (SEO/keyword research, social scheduler, campaign
@@ -26,7 +26,7 @@ Not published to a registry yet — install directly from this repo/path
 ```json
 {
   "dependencies": {
-    "@devcom/license-sdk": "file:../devcom-digital/packages/license-sdk"
+    "@devcomdigital/license-sdk": "file:../devcom-digital/packages/license-sdk"
   }
 }
 ```
@@ -41,7 +41,7 @@ shown once and stored elsewhere only as a hash.
 
 ```ts
 // ESM / TypeScript
-import { DevcomLicense } from "@devcom/license-sdk";
+import { DevcomLicense } from "@devcomdigital/license-sdk";
 
 const license = new DevcomLicense({
   apiKey: process.env.DEVCOM_TOOL_API_KEY!,
@@ -61,7 +61,7 @@ if (!result.valid) {
 
 ```js
 // CommonJS — identical API, just require() instead of import
-const { DevcomLicense } = require("@devcom/license-sdk");
+const { DevcomLicense } = require("@devcomdigital/license-sdk");
 
 const license = new DevcomLicense({ apiKey: process.env.DEVCOM_TOOL_API_KEY });
 const result = await license.verify(userSuppliedKey);
@@ -85,7 +85,7 @@ instance.
 ### Express middleware
 
 ```ts
-import { requireLicense } from "@devcom/license-sdk/express";
+import { requireLicense } from "@devcomdigital/license-sdk/express";
 
 app.use("/api/protected", requireLicense(license));
 // reads the key from the `x-license-key` header by default; pass

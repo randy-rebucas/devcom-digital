@@ -4,6 +4,10 @@ Server-side client for verifying a Devcom Digital subscriber's license key from
 any tool in the suite (SEO/keyword research, social scheduler, campaign
 analytics, ad creative generator, or anything added later).
 
+Published on the public npm registry for ease of installation, but this is
+internal tooling for the Devcom Digital tool suite specifically — it's only
+useful if you're integrating a tool with `devcomdigital.com`'s license system.
+
 It talks to `POST /api/license/verify` on the main Devcom Digital app — see
 [docs/license-sdk-plan.md](../../docs/license-sdk-plan.md) in the repo root
 for the full design and rollout plan.
@@ -64,13 +68,13 @@ const result = await license.verify(userSuppliedKey);
 
 ### Options
 
-| Option        | Default                     | Notes                                                                 |
-| ------------- | ---------------------------- | ---------------------------------------------------------------------|
-| `apiKey`      | required                     | Per-tool key from the admin.                                         |
-| `baseUrl`     | `https://devcomdigital.com`  | Point at a local/staging deployment during development.              |
-| `cacheTtlMs`  | `600000` (10 min)            | How long a result is cached in memory per key. `0` disables caching. |
-| `onError`     | `"closed"`                   | On a network/server failure: `"closed"` = treat as invalid (safe default), `"open"` = treat as valid. Only use `"open"` if an outage on Devcom's side must never block your tool. |
-| `timeoutMs`   | `5000`                       | Verify request timeout.                                              |
+| Option       | Default                     | Notes                                                                                                                                                                              |
+| ------------ | ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `apiKey`     | required                     | Per-tool key from the admin.                                                                                                                                                       |
+| `baseUrl`    | `https://devcomdigital.com`  | Point at a local/staging deployment during development.                                                                                                                            |
+| `cacheTtlMs` | `600000` (10 min)            | How long a result is cached in memory per key. `0` disables caching.                                                                                                               |
+| `onError`    | `"closed"`                   | On a network/server failure: `"closed"` = treat as invalid (safe default), `"open"` = treat as valid. Only use `"open"` if an outage on Devcom's side must never block your tool. |
+| `timeoutMs`  | `5000`                       | Verify request timeout.                                                                                                                                                            |
 
 Results are cached **in-process, per key** — fine for a single server;
 in a multi-instance deployment each instance keeps its own cache, so a
@@ -94,3 +98,8 @@ npm install
 npm run build      # tsup: emits dist/*.cjs + dist/*.js (ESM) + .d.ts/.d.cts
 npm run typecheck
 ```
+
+## License
+
+UNLICENSED — proprietary, published for Devcom Digital's own tool suite.
+Not open source; not intended for use outside Devcom Digital tools.
